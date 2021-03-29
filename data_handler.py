@@ -1,7 +1,8 @@
-from csv import DictReader
-from csv import DictWriter
-import csv, os
+import os
 
+from psycopg2.extras import RealDictCursor
+
+import database_common
 
 QUESTION = "sample_data/question.csv"
 QUESTION_HEADER = ["id", "submission_time", "view_number", "vote_number", "title", "message", "image"]
@@ -9,12 +10,13 @@ ANSWER = "sample_data/answer.csv"
 ANSWER_HEADER = ["id", "submission_time", "vote_number", "question_id", "message", "image"]
 
 
-def get_all_user_story():
-    with open(QUESTION, "r") as read_obj:
-        dict_reader = DictReader(read_obj)
-        list_of_data = list(dict_reader)
-
-    return list_of_data
+@database_common.connection_handler
+def get_all_user_story(cursor: RealDictCursor) -> list:
+    query = """
+            SELECT * FROM question
+    """
+    cursor.execute(query)
+    return cursor.fetchall()
 
 
 def get_user_data(data):
