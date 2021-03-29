@@ -42,15 +42,9 @@ def add_question():
     if request.method=="POST":
         questions = data_handler.get_all_user_story()
 
-        get_id = "0"
-        for question in questions:
-            get_id = question["id"]
-        new_id = int(get_id) + 1
 
         title = request.form["title"]
         message = request.form["message"]
-        vote_number = 0
-        view_number = 0
         time = now_time.strftime("%Y/%m/%d %H:%M:%S")
 
         if request.form["image"] == "":
@@ -58,8 +52,7 @@ def add_question():
         else:
             image = "/static/images/" + request.form["image"]
 
-        new_data = {"id":str(new_id),"submission_time":str(time),"view_number":view_number,"vote_number":vote_number,"title":title,"message":message,"image":image}
-        data_handler.get_user_data(new_data)
+        data_handler.add_new_question(time, title, message, image)
         return redirect(url_for("main_page"))
     else:
         return render_template("add_question.html", title="Add question")
