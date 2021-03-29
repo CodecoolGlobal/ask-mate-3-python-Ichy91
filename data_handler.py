@@ -32,23 +32,35 @@ def update_user_data(data):
         dict_writer.writerows(data)
 
 
-def get_all_user_answer():
-    with open(ANSWER, "r") as read_obj:
-        dict_reader = DictReader(read_obj)
-        list_of_data = list(dict_reader)
 
-    return list_of_data
-
-
-def get_user_answer(data):
-    with open(ANSWER, "a") as add_obj:
-        dict_writer = DictWriter(add_obj, fieldnames=ANSWER_HEADER)
-        dict_writer.writerow(data) #if writerows it won't work
+@database_common.connection_handler
+def get_all_user_answer(cursor: RealDictCursor) -> list:
+    query = """
+        SELECT *
+        FROM answer
+    """
+    cursor.execute(query)
+    return cursor.fetchall()
 
 
-def update_user_answer(data):
-    with open(ANSWER, "w") as update_obj:
-        dict_writer = csv.DictWriter(update_obj, fieldnames=ANSWER_HEADER)
-        dict_writer.writeheader()
-        dict_writer.writerows(data)
+@database_common.connection_handler
+def add_new_answer(cursor: RealDictCursor, date: str, vote_number: str, question_id, message: str,
+                   image: str) -> list:
+    query = """
+        INSERT INTO answer(submission_time,vote_number,question_id,message,image)
+        VALUES (%s, %s, %s, %s, %s)
+    """
+    cursor.execute(query, [date, vote_number, question_id, message,
+                   image])
+    return cursor.fetchall()
+
+
+@database_common.connection_handler
+def update_user_answer(cursor: RealDictCursor, update_answer:str) -> list:
+    query = """
+    UPDATE answer
+    SET message = %s
+    """
+    cursor.execute(query, [update_answer])
+    return cursor.fetchall()
 
