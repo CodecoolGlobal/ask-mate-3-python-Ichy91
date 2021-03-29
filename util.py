@@ -3,20 +3,23 @@
 #You can choose the direction: ascending or descending
 #The order is passed as query string parameters, for example /list?order_by=title&order_direction=desc
 
-
 from flask import Flask, render_template, redirect, request, url_for
-import data_handler
+from werkzeug.utils import secure_filename
+import os
 
-questions = data_handler.get_all_user_story()
+app = Flask(__name__)
+
+UPLOAD_FOLDER = "static/images"
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.secret_key = 'super secret'
 
 
-def sorting(data_list, key):
-    data_list.sort(key = lambda i: i[key], reverse=False)
-    if key == "vote_number" or key == "view_number":
-       data_list.sort(key = lambda i : int(i[key]), reverse=False)
+def upload_file(my_request, picture_id, QandA):
+    if 'image' in my_request.files:
+        file = my_request.files['image']
+        filename = secure_filename(file.filename)
+        filepath = "/" + UPLOAD_FOLDER + "/" + QandA + str(picture_id) + secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], QandA + str(picture_id) + filename))
+        return filepath
 
-
-def reverse(data_list, check):
-    if check == "desc":
-        data_list.reverse()
 
