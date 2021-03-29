@@ -69,22 +69,21 @@ def post_answer(question_id):
 @app.route("/question/<int:question_id>/delete")
 def delete_question(question_id):
 
-    questions = data_handler.get_all_user_story()
-    answers = data_handler.get_all_user_answer()
-
-    data_handler.update_user_data(delete_question)
-    data_handler.update_user_answer(delete_answer)
+    data_handler.delete_question(question_id)
 
     return redirect(url_for("main_page"))
 
 #modify
-@app.route("/answer/<answer_id>/delete")
+@app.route("/answer/<int:answer_id>/delete")
 def delete_answer(answer_id):
 
     answers = data_handler.get_all_user_answer()
     question_id = ""
 
-    data_handler.update_user_answer(answers)
+    for index in range(len(answers)):
+        question_id = answers[index]["question_id"]
+
+    data_handler.delete_answer(answer_id)
     return redirect(url_for("display_post", question_id=question_id))
 
 @app.route("/question/<int:question_id>/edit", methods=["GET","POST"])

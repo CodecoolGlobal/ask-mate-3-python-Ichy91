@@ -92,3 +92,19 @@ def answer_vote(cursor: RealDictCursor, vote_number, question_id) -> list:
     cursor.execute(query, [vote_number, question_id])
 
 
+@database_common.connection_handler
+def delete_question(cursor: RealDictCursor, question_id) -> list:
+    query = """
+    DELETE FROM question
+    WHERE id = %s
+    """
+    cursor.execute(query, [question_id])
+
+@database_common.connection_handler
+def delete_answer(cursor: RealDictCursor, answer_id) -> list:
+    query = """
+    DELETE FROM answer
+    WHERE id = %s
+    """
+    cursor.execute(query, [answer_id])
+
