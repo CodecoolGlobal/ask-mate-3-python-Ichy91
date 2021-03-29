@@ -52,7 +52,6 @@ def add_new_answer(cursor: RealDictCursor, date: str, vote_number: str, question
     """
     cursor.execute(query, [date, vote_number, question_id, message,
                    image])
-    return cursor.fetchall()
 
 
 @database_common.connection_handler
@@ -62,5 +61,4 @@ def update_user_answer(cursor: RealDictCursor, update_answer:str) -> list:
     SET message = %s
     """
     cursor.execute(query, [update_answer])
-    return cursor.fetchall()
 
