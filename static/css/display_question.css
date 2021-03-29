@@ -1,0 +1,72 @@
+p.question-title-section {
+    font-size:23px;
+}
+
+p.add-comment-section {
+    font-size:20px;
+}
+
+#question-submission_time {
+    font-size:13px;
+}
+
+#question-image {
+    height:200px;
+    width:350px;
+}
+
+#question-message {
+    font-size:18px;
+}
+
+#question-up-vote {
+    font-size:14px;
+}
+
+#question-down-vote {
+    font-size:14px;
+}
+
+#answer-vote-number {
+    float: right;
+    font-size: 16px;
+}
+
+#answer-delete {
+    color:red;
+    font-size:20px;
+}
+
+#answer-vote-up {
+    font-size:14px;
+}
+
+#answer-vote-down {
+    font-size:14px;
+}
+
+#answer-image {
+    height:175px;
+    width:300px;
+}
+
+#edit-question {
+    font-size:20px;
+}
+
+#delete-question {
+    font-size:20px;
+}
+
+#back-to-posts {
+    font-size:20px;
+}
+
+img {
+    transition:transform 0.25s ease;
+}
+
+img:hover {
+    -webkit-transform:scale(1.5); /* or some other value */
+    transform:scale(1.5);
+}
