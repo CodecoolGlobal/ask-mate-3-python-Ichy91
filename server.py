@@ -14,6 +14,7 @@ def main_page():
     questions = data_handler.get_all_user_story()
     return render_template("list.html", questions=questions, title="Home Page")
 
+
 @app.route("/question/<int:question_id>")
 def display_post(question_id):
 
@@ -24,7 +25,7 @@ def display_post(question_id):
         if question['id'] == question_id:
             view_number = question['view_number'] +1
 
-    #view_number
+    # view_number
     data_handler.view_counter(view_number, question_id)
 
     return render_template("display_question.html", questions=questions, answers=answers, question_id=question_id, title="{0}. Post".format(question_id))
@@ -72,7 +73,7 @@ def post_answer(question_id):
         questions = data_handler.get_all_user_story()
         return render_template("post_answer.html", title="Post comment", questions=questions, question_id=question_id)
 
-#modify
+
 @app.route("/question/<int:question_id>/delete")
 def delete_question(question_id):
 
@@ -80,18 +81,18 @@ def delete_question(question_id):
 
     return redirect(url_for("main_page"))
 
-#modify
+
 @app.route("/answer/<int:answer_id>/delete")
 def delete_answer(answer_id):
 
     answers = data_handler.get_all_user_answer()
-    question_id = ""
 
     for index in range(len(answers)):
         question_id = answers[index]["question_id"]
 
     data_handler.delete_answer(answer_id)
     return redirect(url_for("display_post", question_id=question_id))
+
 
 @app.route("/question/<int:question_id>/edit", methods=["GET","POST"])
 def edit_question(question_id):
