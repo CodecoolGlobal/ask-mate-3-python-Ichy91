@@ -100,6 +100,7 @@ def delete_question(cursor: RealDictCursor, question_id) -> list:
     """
     cursor.execute(query, [question_id])
 
+
 @database_common.connection_handler
 def delete_answer(cursor: RealDictCursor, answer_id) -> list:
     query = """
@@ -108,3 +109,12 @@ def delete_answer(cursor: RealDictCursor, answer_id) -> list:
     """
     cursor.execute(query, [answer_id])
 
+
+@database_common.connection_handler
+def view_counter(cursor: RealDictCursor, view_number, question_id) -> list:
+    query = """
+    UPDATE question 
+    SET view_number = %s
+    WHERE id = %s
+    """
+    cursor.execute(query, [view_number, question_id])

@@ -19,7 +19,14 @@ def display_post(question_id):
 
     questions = data_handler.get_all_user_story()
     answers = data_handler.get_all_user_answer()
+
+    for question in questions:
+        if question['id'] == question_id:
+            view_number = question['view_number'] +1
+
     #view_number
+    data_handler.view_counter(view_number, question_id)
+
     return render_template("display_question.html", questions=questions, answers=answers, question_id=question_id, title="{0}. Post".format(question_id))
 
 @app.route("/add-question", methods=["GET","POST"])
@@ -137,8 +144,6 @@ def answer_vote_up(answer_id):
 
     answers = data_handler.get_all_user_answer()
 
-    question_id = ""
-
     for index in range(len(answers)):
         question_id = answers[index]["question_id"]
 
@@ -154,7 +159,6 @@ def answer_vote_up(answer_id):
 def answer_vote_down(answer_id):
 
     answers = data_handler.get_all_user_answer()
-    question_id = ""
 
     for index in range(len(answers)):
         question_id = answers[index]["question_id"]
