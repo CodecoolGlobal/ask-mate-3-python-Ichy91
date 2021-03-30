@@ -218,7 +218,6 @@ def search_phrase():
 
 @app.route("/answer/<int:answer_id>/new-comment", methods=["GET","POST"])
 def add_answer_comment(answer_id):
-
     answers = data_handler.get_all_user_answer()
     questions = data_handler.get_all_user_answer()
 
@@ -238,7 +237,6 @@ def add_answer_comment(answer_id):
 
 @app.route("/answer/<int:answer_id>/edit", methods=["GET","POST"])
 def edit_answer(answer_id):
-
     answers = data_handler.get_all_user_answer()
     questions = data_handler.get_all_user_answer()
 
@@ -257,7 +255,6 @@ def edit_answer(answer_id):
 
 @app.route("/comment/<int:comment_id>/edit", methods=["GET","POST"])
 def edit_comment(comment_id):
-
     comments = data_handler.list_all_comments()
     questions = data_handler.get_all_user_story()
     answers = data_handler.get_all_user_answer()
@@ -266,10 +263,8 @@ def edit_comment(comment_id):
         question_id = answers[index]["question_id"]
 
     if request.method == "POST":
-
         time = now_time.strftime("%Y/%m/%d %H:%M:%S")
         message = request.form["updated-comment"]
-
 
         for comment in comments:
             if comment["id"] == comment_id:
@@ -277,7 +272,6 @@ def edit_comment(comment_id):
                     edit_counter = 1
                 else:
                     edit_counter = int(comment["edited_count"]) + 1
-
 
         data_handler.update_comment(message,time,edit_counter,comment_id)
 
