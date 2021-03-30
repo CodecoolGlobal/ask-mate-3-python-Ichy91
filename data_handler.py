@@ -47,7 +47,7 @@ def get_all_user_answer(cursor: RealDictCursor) -> list:
 @database_common.connection_handler
 def add_new_answer(cursor: RealDictCursor, date: str, question_id, message: str, image: str) -> list:
     query = """
-    INSERT INTO answer(submission_time,vote_number,question_id,message,image)
+    INSERT INTO answer(submission_time, vote_number, question_id, message, image)
     VALUES (%s, 0, %s, %s, %s)
     """
     cursor.execute(query, [date, question_id, message, image])

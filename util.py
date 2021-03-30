@@ -20,6 +20,7 @@ def upload_file(my_request, picture_id, QandA):
         filename = secure_filename(file.filename)
         filepath = "/" + UPLOAD_FOLDER + "/" + QandA + str(picture_id) + secure_filename(file.filename)
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], QandA + str(picture_id) + filename))
+
         return filepath
 
 
