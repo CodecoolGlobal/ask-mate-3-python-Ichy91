@@ -97,7 +97,6 @@ def delete_question(cursor: RealDictCursor, question_id) -> list:
     query = """
     DELETE FROM question
     WHERE id = %s
-    
     """
     cursor.execute(query, [question_id])
 
@@ -107,7 +106,6 @@ def delete_answers_by_question(cursor: RealDictCursor, question_id) -> list:
     query = """
     DELETE FROM answer
     WHERE question_id = %s
-
     """
     cursor.execute(query, [question_id])
 
@@ -129,3 +127,12 @@ def view_counter(cursor: RealDictCursor, view_number, question_id) -> list:
     WHERE id = %s
     """
     cursor.execute(query, [view_number, question_id])
+
+
+@database_common.connection_handler
+def add_new_comment_to_question(cursor: RealDictCursor, question_id,  message: str, submission_time) -> list:
+    query = """
+    INSERT INTO comment(question_id, message, submission_time, edited_count)
+    VALUES (%s, %s, %s, 0)
+    """
+    cursor.execute(query, [question_id, message, submission_time])
