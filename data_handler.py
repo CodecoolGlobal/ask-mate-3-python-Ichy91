@@ -138,6 +138,7 @@ def get_search_result_questions_id(cursor: RealDictCursor, phrase: str) -> list:
     WHERE LOWER(title) LIKE %s OR LOWER(message) like %s
     """
     cursor.execute(query, ['%'+phrase+'%', '%'+phrase+'%'])
+    return cursor.fetchall()
 
 
 @database_common.connection_handler
@@ -167,7 +168,7 @@ def get_search_result_questions_id_of_answers(cursor: RealDictCursor, phrase: st
     query = """
     SELECT question_id as id
     FROM answer
-    WHERE LOWER(message) like %s
+    WHERE LOWER(message) like %s 
     """
     cursor.execute(query, ['%'+phrase+'%'])
     return cursor.fetchall()

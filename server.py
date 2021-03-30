@@ -201,8 +201,8 @@ def search_phrase():
     phrase = displayed_phrase.lower()
     questions = data_handler.get_all_user_story()
 
-    extended_id_list = (data_handler.get_search_result_questions_id(phrase)
-                        +data_handler.get_search_result_questions_id_of_answers(phrase))
+    extended_id_list = (data_handler.get_search_result_questions_id(phrase)+
+                        data_handler.get_search_result_questions_id_of_answers(phrase))
 
     right_ids = []
     for element in extended_id_list:
