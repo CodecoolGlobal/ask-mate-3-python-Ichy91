@@ -27,18 +27,19 @@ def display_post(question_id):
     answers = data_handler.get_all_user_answer()
     question_comment = data_handler.list_question_comment(question_id)
     comments = data_handler.list_all_comments()
-
+    questions_tags = data_handler.question_tags()
+    tags = data_handler.tags()
 
     for question in questions:
         if question['id'] == question_id:
             view_number = question['view_number'] +1
     # view_number
     data_handler.view_counter(view_number, question_id)
-    print(questions)
 
     return render_template("display_question.html", questions=questions, answers=answers,
                            question_id=question_id, title="Post",
-                           question_comment=question_comment,comments=comments)
+                           question_comment=question_comment,comments=comments,
+                           questions_tags=questions_tags, tags=tags)
 
 
 
@@ -287,6 +288,21 @@ def delete_comment(comment_id):
 
     return redirect(url_for("main_page"))
     #return redirect(url_for("display_post", question_id=question_id))
+
+
+@app.route("/question/<int:question_id>/new-tag", methods=["GET","POST"])
+def add_question_tag(question_id):
+
+    #add_tags = data_handler.()
+
+    pass
+
+
+@app.route("/question/<int:question_id>/tag/<int:tag_id>/delete")
+def delete_tag(question_id,tag_id):
+
+    data_handler.delete_tags(question_id, tag_id)
+    return redirect(url_for("display_post", question_id=question_id))
 
 
 if __name__ == '__main__':

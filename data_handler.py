@@ -241,3 +241,33 @@ def delete_comment(cursor: RealDictCursor, comment_id) -> list:
     """
     cursor.execute(query, [comment_id])
 
+
+@database_common.connection_handler
+def question_tags(cursor: RealDictCursor) -> list:
+    query = """
+    SELECT *
+    FROM question_tag
+    """
+    cursor.execute(query)
+    return cursor.fetchall()
+
+
+@database_common.connection_handler
+def tags(cursor: RealDictCursor) -> list:
+    query = """
+    SELECT *
+    FROM tag
+    """
+    cursor.execute(query)
+    return cursor.fetchall()
+
+
+@database_common.connection_handler
+def delete_tags(cursor: RealDictCursor, question_id, tag_id) -> list:
+    query = """
+    DELETE FROM question_tag
+    WHERE question_id = %s AND tag_id = %s
+    """
+    cursor.execute(query, [question_id, tag_id])
+
+

@@ -6,6 +6,7 @@
 
 {% block content %}
 
+
     {% for question in questions %}
         {% if question_id == question.id %}
             <div>
@@ -13,12 +14,22 @@
                 <p class="question-title-section">⇅{{ question.vote_number }}
                     <strong>
                         {{ question.title }}
+                        {% for tag in tags %}
+                            {% for question_tag in questions_tags %}
+                                {% if question_id == question_tag.question_id and tag.id == question_tag.tag_id %}
+                                    - [{{ tag.name }}]
+                                    <a href="/question/{{ question_id }}/tag/{{ tag.id }}/delete"
+                                       id="answer-delete">X</a>
+                                {% endif %}
+                            {% endfor %}
+                        {% endfor %}
                     </strong>
                     <small id="question-submission_time"><br>Written on: {{ question.submission_time }}</small>
                 </p>
                 <p id="question-message">{{ question.message }}</p>
                 {% if question.image %}
-                    <img src="{{ url_for('static', filename=question.image )}}" alt="{{ question.image }}" id="question-image"><br><br>
+                    <img src="{{ url_for('static', filename=question.image )}}" alt="{{ question.image }}"
+                         id="question-image"><br><br>
                 {% endif %}
                 <a href="/question/{{ question_id }}/vote_up" id="question-up-vote" class="btn btn-success">Up vote</a>
                 <a href="/question/{{ question.id }}/vote_down" id="question-down-vote" class="btn btn-danger">Down vote</a>
