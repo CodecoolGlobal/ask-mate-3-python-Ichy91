@@ -54,13 +54,6 @@ p.add-comment-section {
     font-size:20px;
 }
 
-#delete-question {
-    font-size:20px;
-}
-
-#back-to-posts {
-    font-size:20px;
-}
 
 img {
     transition:transform 0.25s ease;
@@ -69,4 +62,8 @@ img {
 img:hover {
     -webkit-transform:scale(1.5); /* or some other value */
     transform:scale(1.5);
+}
+
+#answer-comments {
+    font-size:15px;
 }
