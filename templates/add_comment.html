@@ -6,8 +6,7 @@
 
 {% block content %}
 
-    {% for answer in answers %}
-            <form action="/answer/{{ answer.id }}/new-comment" method="POST">
+            <form action="" method="POST">
 
                 <div class="form-group">
                     <label for="answer" id="label-comment">Comment for the answer</label><br>
@@ -16,12 +15,11 @@
 
             <center><button type="submit" class="btn-primary" id="submit">Add your comment</button></center>
             </form>
-    {% endfor %}
 
         {% for question in questions %}
-
-    <br><br><a href="/question/{{ question.question_id }}" id="back-to-posts">Back to post</a>
-
+            {% if question_id == question.id %}
+    <br><br><a href="/question/{{ question.id }}" id="back-to-posts">Back to post</a>
+            {% endif %}
         {% endfor %}
 
 {% endblock %}

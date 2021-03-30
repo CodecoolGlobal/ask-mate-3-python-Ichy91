@@ -10,7 +10,6 @@ app = Flask(__name__)
 @app.route("/")
 @app.route("/list")
 def main_page():
-
     questions = data_handler.get_all_user_story()
     return render_template("list.html", questions=questions, title="Home Page")
 
@@ -20,21 +19,23 @@ def display_post(question_id):
 
     questions = data_handler.get_all_user_story()
     answers = data_handler.get_all_user_answer()
+    question_comment = data_handler.list_question_comment(question_id)
+    comments = data_handler.list_all_comments()
 
     for question in questions:
         if question['id'] == question_id:
             view_number = question['view_number'] +1
-
     # view_number
     data_handler.view_counter(view_number, question_id)
 
-    return render_template("display_question.html", questions=questions, answers=answers, question_id=question_id, title="{0}. Post".format(question_id))
+    return render_template("display_question.html", questions=questions, answers=answers,
+                           question_id=question_id, title="{0}. Post".format(question_id),
+                           question_comment=question_comment,comments=comments)
+
 
 @app.route("/add-question", methods=["GET","POST"])
 def add_question():
-
-    if request.method=="POST":
-
+    if request.method == "POST":
         title = request.form["title"]
         message = request.form["message"]
         time = now_time.strftime("%Y/%m/%d %H:%M:%S")
@@ -53,11 +54,26 @@ def add_question():
     else:
         return render_template("add_question.html", title="Add question")
 
+
+@app.route("/question/<int:question_id>/new-comment", methods=["GET","POST"])
+def add_new_comment_to_question(question_id):
+
+    questions = data_handler.get_all_user_story()
+
+    if request.method == 'POST':
+        time = now_time.strftime("%Y/%m/%d %H:%M:%S")
+        message = request.form['new-comment']
+
+        data_handler.add_new_comment_to_question(question_id, message, time)
+
+        return redirect(url_for('display_post', question_id=question_id))
+
+    return render_template('add_comment.html', questions=questions, question_id=question_id)
+
+
 @app.route("/question/<int:question_id>/new-answer", methods=["GET","POST"])
 def post_answer(question_id):
-
     if request.method == "POST":
-
         answer = request.form["answer"]
         time = now_time.strftime("%Y/%m/%d %H:%M:%S")
 
@@ -65,10 +81,10 @@ def post_answer(question_id):
             image = ""
         else:
             image = "/static/images/" + request.form["image"]
-
         data_handler.add_new_answer(time, question_id, answer, image)
 
         return redirect(url_for("display_post", question_id=question_id))
+
     else:
         questions = data_handler.get_all_user_story()
         return render_template("post_answer.html", title="Post comment", questions=questions, question_id=question_id)
@@ -76,8 +92,6 @@ def post_answer(question_id):
 
 @app.route("/question/<int:question_id>/delete")
 def delete_question(question_id):
-
-    print(question_id)
     data_handler.delete_answers_by_question(question_id)
     data_handler.delete_question(question_id)
 
@@ -86,7 +100,6 @@ def delete_question(question_id):
 
 @app.route("/answer/<int:answer_id>/delete")
 def delete_answer(answer_id):
-
     answers = data_handler.get_all_user_answer()
 
     for index in range(len(answers)):
@@ -98,9 +111,7 @@ def delete_answer(answer_id):
 
 @app.route("/question/<int:question_id>/edit", methods=["GET","POST"])
 def edit_question(question_id):
-
     if request.method == "POST":
-
         updated_title = request.form["title"]
         updated_message = request.form["message"]
 
@@ -108,17 +119,19 @@ def edit_question(question_id):
             image = ""
         else:
             image = "/static/images/"+request.form["image"]
+
         #updating
         data_handler.update_user_data(updated_title,updated_message,image, question_id)
         return redirect(url_for("display_post", question_id=question_id))
+
     else:
         questions = data_handler.get_all_user_story()
         return render_template("update.html", title="Update", questions=questions, question_id=question_id)
 
+
 #Vote section
 @app.route("/question/<int:question_id>/vote_up")
 def question_vote_up(question_id):
-
     questions = data_handler.get_all_user_story()
 
     for question in questions:
@@ -129,9 +142,9 @@ def question_vote_up(question_id):
 
     return redirect(url_for("main_page"))
 
+
 @app.route("/question/<int:question_id>/vote_down")
 def question_vote_down(question_id):
-
     questions = data_handler.get_all_user_story()
 
     for question in questions:
@@ -142,9 +155,9 @@ def question_vote_down(question_id):
 
     return redirect(url_for("main_page"))
 
+
 @app.route("/answer/<int:answer_id>/vote_up")
 def answer_vote_up(answer_id):
-
     answers = data_handler.get_all_user_answer()
 
     for index in range(len(answers)):
@@ -158,9 +171,9 @@ def answer_vote_up(answer_id):
 
     return redirect(url_for("display_post", question_id=question_id))
 
+
 @app.route("/answer/<int:answer_id>/vote_down")
 def answer_vote_down(answer_id):
-
     answers = data_handler.get_all_user_answer()
 
     for index in range(len(answers)):
@@ -176,16 +189,19 @@ def answer_vote_down(answer_id):
 
 
 @app.route("/answer/<int:answer_id>/new-comment", methods=["GET","POST"])
-def list_answer_comment(answer_id):
+def add_answer_comment(answer_id):
 
     answers = data_handler.get_all_user_answer()
     questions = data_handler.get_all_user_answer()
 
     if request.method == "POST":
-        pass
 
-    return render_template("add_comment_to_answer.html", answers=answers, questions=questions)
+        time = now_time.strftime("%Y/%m/%d %H:%M:%S")
+        message = request.form["new-comment"]
 
+        data_handler.add_comment_to_answer(answer_id,message,time)
+
+    return render_template("add_comment.html", answers=answers, questions=questions)
 
 if __name__ == '__main__':
     app.run(

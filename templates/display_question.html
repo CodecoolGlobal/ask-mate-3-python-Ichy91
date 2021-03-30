@@ -8,6 +8,7 @@
 
     {% for question in questions %}
         {% if question_id == question.id %}
+            <div>
             <center>
                 <p class="question-title-section">⇅{{ question.vote_number }}
                     <strong>
@@ -22,6 +23,17 @@
                 <a href="/question/{{ question_id }}/vote_up" id="question-up-vote" class="btn btn-success">Up vote</a>
                 <a href="/question/{{ question.id }}/vote_down" id="question-down-vote" class="btn btn-danger">Down vote</a>
             </center>
+            <br>
+            Comment(s) for the question:
+            {% for comment in question_comment %}
+                {% if question_id == comment.question_id %}
+                <div id="question-comments">
+                    <small id="question-submission_time"><br>Written on: {{ comment.submission_time }}</small>
+                    <br>{{ comment.message }}
+                </div>
+                {% endif %}
+            {% endfor %}
+
         {% endif %}
     {% endfor %}
 
@@ -30,7 +42,7 @@
         {% if question_id == question.id %}
     <center>
         <p class="add-comment-section">If you want to ask something just click down below!<br><br>
-        <a href="/question/{{ question.id }}/new-answer">Write a comment</a></p>
+        <a href="/question/{{ question.id }}/new-answer">Write an answer</a></p>
     </center>
         {% endif %}
     {% endfor %}
@@ -55,7 +67,14 @@
             <a href="/answer/{{ answer.id }}/vote_down" id="answer-vote-down" class="btn btn-danger">
                 Down vote</a>
 
-
+            {% for comment in comments %}
+                {% if answer.id == comment.answer_id %}
+                <div id="question-comments">
+                    <small id="question-submission_time"><br>Written on: {{ comment.submission_time }}</small>
+                    <br>{{ comment.message }}
+                </div>
+                {% endif %}
+            {% endfor %}
             <hr>
         {% endif %}
     {% endfor %}
@@ -64,6 +83,7 @@
         {% for question in questions %}
             {% if question_id == question.id %}
                 <center>
+                <a href="/question/{{ question.id }}/new-comment" class="btn btn-info" id="edit-question">Add comment</a><br><br>
                 <a href="/question/{{ question.id }}/edit" id="edit-question" class="btn btn-primary">Edit the question</a><br><br>
                 <a href="/question/{{ question_id }}/delete" id="delete-question" class="btn btn-danger">Delete the question</a><br><br>
             {% endif %}
