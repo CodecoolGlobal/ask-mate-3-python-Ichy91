@@ -39,6 +39,7 @@ def get_all_user_answer(cursor: RealDictCursor) -> list:
     query = """
     SELECT * 
     FROM answer
+    ORDER BY submission_time
     """
     cursor.execute(query)
     return cursor.fetchall()
@@ -175,3 +176,20 @@ def list_all_comments(cursor: RealDictCursor) -> list:
     cursor.execute(query)
     return cursor.fetchall()
 
+@database_common.connection_handler
+def update_answer(cursor: RealDictCursor, update_answer, answer_id) -> list:
+    query = """
+    UPDATE answer
+    SET message = %s
+    WHERE id = %s
+    """
+    cursor.execute(query, [update_answer, answer_id])
+
+@database_common.connection_handler
+def update_comment(cursor: RealDictCursor, update_comment, updated_date, edited_count,  comment_id) -> list:
+    query = """
+    UPDATE comment
+    SET message = %s, submission_time = %s, edited_count = %s
+    WHERE id = %s
+    """
+    cursor.execute(query, [update_comment, updated_date, edited_count, comment_id])

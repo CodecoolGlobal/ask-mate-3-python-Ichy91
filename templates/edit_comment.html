@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+        {% for comment in comments %}
+            {% if comment_id == comment.id %}
+
+                <form action="/comment/{{ comment.id }}/edit" method="POST">
+
+                <div class="form-group">
+                    <label for="answer" id="label-comment">Your comment</label><br>
+                    <textarea class="form-control" id="answer" minlength ="5" name="updated-comment"
+                              required>{{ comment.message }}</textarea><br>
+                </div>
+            <center><button type="submit" class="btn-primary" id="submit">Edit your comment</button></center>
+
+            </form>
+
+        {% endif %}
+    {% endfor %}
+
+    {% for question in questions %}
+        {% if question_id == question.id %}
+            <br><br><a href="/question/{{ question_id }}" id="back-to-posts">Back to post</a>
+        {% endif %}
+    {% endfor %}
+
+{% endblock %}

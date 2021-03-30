@@ -68,7 +68,7 @@ def add_new_comment_to_question(question_id):
 
         return redirect(url_for('display_post', question_id=question_id))
 
-    return render_template('add_comment.html', questions=questions, question_id=question_id)
+    return render_template('add_comment_question.html', questions=questions, question_id=question_id)
 
 
 @app.route("/question/<int:question_id>/new-answer", methods=["GET","POST"])
@@ -194,14 +194,67 @@ def add_answer_comment(answer_id):
     answers = data_handler.get_all_user_answer()
     questions = data_handler.get_all_user_answer()
 
+    for index in range(len(answers)):
+        question_id = answers[index]["question_id"]
+
     if request.method == "POST":
 
         time = now_time.strftime("%Y/%m/%d %H:%M:%S")
         message = request.form["new-comment"]
-
         data_handler.add_comment_to_answer(answer_id,message,time)
 
-    return render_template("add_comment.html", answers=answers, questions=questions)
+        return redirect(url_for("display_post", question_id=question_id))
+
+    return render_template("add_comment_answer.html", answers=answers, questions=questions, answer_id=answer_id)
+
+@app.route("/answer/<int:answer_id>/edit", methods=["GET","POST"])
+def edit_answer(answer_id):
+
+    answers = data_handler.get_all_user_answer()
+    questions = data_handler.get_all_user_answer()
+
+    for index in range(len(answers)):
+        question_id = answers[index]["question_id"]
+
+    if request.method == "POST":
+
+        message = request.form["updated-answer"]
+        data_handler.update_answer(message,answer_id)
+
+        return redirect(url_for("display_post", question_id=question_id))
+
+    return render_template("edit_answer.html", answers=answers, questions=questions, answer_id=answer_id, question_id=question_id)
+
+@app.route("/comment/<int:comment_id>/edit", methods=["GET","POST"])
+def edit_comment(comment_id):
+
+    comments = data_handler.list_all_comments()
+    questions = data_handler.get_all_user_story()
+    answers = data_handler.get_all_user_answer()
+
+    for index in range(len(answers)):
+        question_id = answers[index]["question_id"]
+
+    if request.method == "POST":
+
+        time = now_time.strftime("%Y/%m/%d %H:%M:%S")
+        message = request.form["updated-comment"]
+
+
+        for comment in comments:
+            if comment["id"] == comment_id:
+                if comment["edited_count"] == None:
+                    edit_counter = 1
+                else:
+                    edit_counter = int(comment["edited_count"]) + 1
+
+
+        data_handler.update_comment(message,time,edit_counter,comment_id)
+
+        return redirect(url_for("display_post", question_id=question_id))
+
+    return render_template("edit_comment.html", comment_id=comment_id, question_id=question_id, comments=comments,
+                           questions=questions)
 
 if __name__ == '__main__':
     app.run(
