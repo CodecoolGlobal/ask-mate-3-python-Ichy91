@@ -16,11 +16,7 @@
         {% endif %}
     {% endfor %}
 
-    {% for question in questions %}
-        {% if question_id == question.id %}
             <br><br><a href="/question/{{ question_id }}" id="back-to-posts">Back to post</a>
-        {% endif %}
-    {% endfor %}
 
 
 {% endblock %}
