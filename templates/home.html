@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block head %}
+   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/list.css')}}">
+{% endblock %}
+
+{% block content %}
+    <center><br>
+        <h1>Welcome on the Askers forum!</h1>
+        <p id="add-question-title">If you want to ask something just click down below!</p>
+        <a id="add-question" href="/add-question" class="btn btn-warning">Ask here</a>
+    </center>
+    <br><br>
+    <p>
+    <form action="/search">
+        <input type="text" name="phrase" placeholder="Search for phrase..">
+        <button type="submit" class="btn btn-primary">Search</button>
+        <a href="/list" id="edit-question" class="btn btn-secondary">List all questions</a>
+    </form>
+    </p>
+
+    {% if not check %}
+        <div class="navbar">
+            <a href="/list/submission_time/desc">Date</a> {# class="active" #}
+            <a href="/list/view_number/desc">View</a>
+            <a href="/list/vote_number/desc">Vote</a>
+            <a href="/list/title/desc">Title</a>
+        </div>
+    {% endif %}
+        {% if check == "asc" %}
+        <div class="navbar">
+            <a href="/list/submission_time/desc">Date</a> {# class="active" #}
+            <a href="/list/view_number/desc">View</a>
+            <a href="/list/vote_number/desc">Vote</a>
+            <a href="/list/title/desc">Title</a>
+        </div>
+    {% endif %}
+        {% if check == "desc"%}
+        <div class="navbar">
+            <a href="/list/submission_time/asc">Date</a> {# class="active" #}
+            <a href="/list/view_number/asc">View</a>
+            <a href="/list/vote_number/asc">Vote</a>
+            <a href="/list/title/asc">Title</a>
+        </div>
+    {% endif %}
+
+        <br>
+
+{% for question in questions %}
+      <small id="question-views">{{ question.view_number }} views</small>
+      <h3>{{ question.title }} ⇅{{ question.vote_number }}</h3>
+      <small id="question-submission_time">Written on: {{ question.submission_time }}</small>
+  <a href="/question/{{ question.id }}" id="question-message-link">
+  <p id="question-message">
+      <br>
+      {{ question.message }}
+  </p>
+  </a>
+      {% if question.image %}
+         <center><img src="{{ question.image }}" alt="{{ question.image }}" id="question-image"></center>
+      {% endif %}
+    <hr>
+
+    {% endfor %}
+{% endblock %}
