@@ -77,6 +77,8 @@ def post_answer(question_id):
 @app.route("/question/<int:question_id>/delete")
 def delete_question(question_id):
 
+    print(question_id)
+    data_handler.delete_answers_by_question(question_id)
     data_handler.delete_question(question_id)
 
     return redirect(url_for("main_page"))

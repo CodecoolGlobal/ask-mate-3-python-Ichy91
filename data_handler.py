@@ -97,6 +97,17 @@ def delete_question(cursor: RealDictCursor, question_id) -> list:
     query = """
     DELETE FROM question
     WHERE id = %s
+    
+    """
+    cursor.execute(query, [question_id])
+
+
+@database_common.connection_handler
+def delete_answers_by_question(cursor: RealDictCursor, question_id) -> list:
+    query = """
+    DELETE FROM answer
+    WHERE question_id = %s
+
     """
     cursor.execute(query, [question_id])
 
