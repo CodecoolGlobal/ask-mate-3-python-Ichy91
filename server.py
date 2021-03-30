@@ -28,14 +28,16 @@ def display_post(question_id):
     question_comment = data_handler.list_question_comment(question_id)
     comments = data_handler.list_all_comments()
 
+
     for question in questions:
         if question['id'] == question_id:
             view_number = question['view_number'] +1
     # view_number
     data_handler.view_counter(view_number, question_id)
+    print(questions)
 
     return render_template("display_question.html", questions=questions, answers=answers,
-                           question_id=question_id, title="{0}. Post".format(question_id),
+                           question_id=question_id, title="Post",
                            question_comment=question_comment,comments=comments)
 
 
@@ -50,7 +52,7 @@ def add_question():
         if request.form["image"] == "":
             image = ""
         else:
-            image = "/static/images/" + request.form["image"]
+            image = "images/" + request.form["image"]
 
         #image = my_request.form.files["image"]
         #upload_image = util.upload_file(image,next_id,"Q")
@@ -283,5 +285,5 @@ def edit_comment(comment_id):
 
 if __name__ == '__main__':
     app.run(
-        debug=True,
+    debug=True,
     )
