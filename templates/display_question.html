@@ -48,8 +48,8 @@
                 <img src="{{ answer.image }}" alt="{{ answer.image }}" id="answer-image">
                 <br>
             {% endif %}
-
             <br>
+            <a href="/answer/{{ answer.id }}/new-comment">Add comment</a>
             <a href="/answer/{{ answer.id }}/vote_up" id="answer-vote-up" class="btn btn-success">
                 Up vote</a>
             <a href="/answer/{{ answer.id }}/vote_down" id="answer-vote-down" class="btn btn-danger">

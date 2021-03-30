@@ -129,3 +129,21 @@ def view_counter(cursor: RealDictCursor, view_number, question_id) -> list:
     WHERE id = %s
     """
     cursor.execute(query, [view_number, question_id])
+
+@database_common.connection_handler
+def list_answer_comment(cursor: RealDictCursor, answer_id) -> list:
+    query = """
+    SELECT *
+    FROM comment
+    WHERE answer_id = %s
+    """
+    cursor.execute(query, [answer_id])
+
+
+@database_common.connection_handler
+def add_comment_to_answer(cursor: RealDictCursor, answer_id, message, date) -> list:
+    query = """
+    INSERT INTO comment (answer_id, message, submission_time)
+    VALUES (%s, %s, %s)
+    """
+    cursor.execute(query, [answer_id, message, date])

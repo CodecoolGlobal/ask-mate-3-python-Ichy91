@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block head %}
+   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/post_answer.css')}}">
+{% endblock %}
+
+{% block content %}
+
+    {% for answer in answers %}
+            <form action="/answer/{{ answer.id }}/new-comment" method="POST">
+
+                <div class="form-group">
+                    <label for="answer" id="label-comment">Comment for the answer</label><br>
+                    <textarea class="form-control" id="answer" minlength ="5" name="new-comment" required></textarea><br>
+                </div>
+
+            <center><button type="submit" class="btn-primary" id="submit">Add your comment</button></center>
+            </form>
+    {% endfor %}
+
+        {% for question in questions %}
+
+    <br><br><a href="/question/{{ question.question_id }}" id="back-to-posts">Back to post</a>
+
+        {% endfor %}
+
+{% endblock %}

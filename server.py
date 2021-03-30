@@ -174,6 +174,19 @@ def answer_vote_down(answer_id):
 
     return redirect(url_for("display_post", question_id=question_id))
 
+
+@app.route("/answer/<int:answer_id>/new-comment", methods=["GET","POST"])
+def list_answer_comment(answer_id):
+
+    answers = data_handler.get_all_user_answer()
+    questions = data_handler.get_all_user_answer()
+
+    if request.method == "POST":
+        pass
+
+    return render_template("add_comment_to_answer.html", answers=answers, questions=questions)
+
+
 if __name__ == '__main__':
     app.run(
         debug=True,
