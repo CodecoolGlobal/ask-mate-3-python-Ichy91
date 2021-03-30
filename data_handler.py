@@ -16,6 +16,17 @@ def get_all_user_story(cursor: RealDictCursor) -> list:
 
 
 @database_common.connection_handler
+def get_five_latest_user_stories(cursor: RealDictCursor) -> list:
+    query = """
+    SELECT * FROM question
+    ORDER BY submission_time DESC
+    LIMIT 5
+    """
+    cursor.execute(query)
+    return cursor.fetchall()
+
+
+@database_common.connection_handler
 def add_new_question(cursor: RealDictCursor, time, title, message, image) -> list:
     query = """
     INSERT INTO question (submission_time, view_number, vote_number, title, message, image)

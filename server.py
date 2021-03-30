@@ -8,11 +8,17 @@ app = Flask(__name__)
 
 
 @app.route("/")
-@app.route("/list")
 def main_page():
+    questions = data_handler.get_five_latest_user_stories()
+
+    return render_template("home.html", questions=questions, title="Home Page")
+
+
+@app.route("/list")
+def list_all_questions():
     questions = data_handler.get_all_user_story()
 
-    return render_template("list.html", questions=questions, title="Home Page")
+    return render_template("list.html", questions=questions, title="All questions")
 
 
 @app.route("/question/<int:question_id>")
@@ -36,7 +42,6 @@ def display_post(question_id):
 
 @app.route("/add-question", methods=["GET","POST"])
 def add_question():
-
     if request.method == "POST":
         title = request.form["title"]
         message = request.form["message"]
@@ -60,7 +65,6 @@ def add_question():
 
 @app.route("/question/<int:question_id>/new-comment", methods=["GET","POST"])
 def add_new_comment_to_question(question_id):
-
     questions = data_handler.get_all_user_story()
 
     if request.method == 'POST':
@@ -214,7 +218,6 @@ def search_phrase():
 
 @app.route("/answer/<int:answer_id>/new-comment", methods=["GET","POST"])
 def add_answer_comment(answer_id):
-
     answers = data_handler.get_all_user_answer()
     questions = data_handler.get_all_user_answer()
 
@@ -234,7 +237,6 @@ def add_answer_comment(answer_id):
 
 @app.route("/answer/<int:answer_id>/edit", methods=["GET","POST"])
 def edit_answer(answer_id):
-
     answers = data_handler.get_all_user_answer()
     questions = data_handler.get_all_user_answer()
 
@@ -253,15 +255,12 @@ def edit_answer(answer_id):
 
 @app.route("/comment/<int:comment_id>/edit", methods=["GET","POST"])
 def edit_comment(comment_id):
-
     comments = data_handler.list_all_comments()
     questions = data_handler.get_all_user_story()
 
     if request.method == "POST":
-
         time = now_time.strftime("%Y/%m/%d %H:%M:%S")
         message = request.form["updated-comment"]
-
 
         for comment in comments:
             if comment["id"] == comment_id:
@@ -269,7 +268,6 @@ def edit_comment(comment_id):
                     edit_counter = 1
                 else:
                     edit_counter = int(comment["edited_count"]) + 1
-
 
         data_handler.update_comment(message,time,edit_counter,comment_id)
 
