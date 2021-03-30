@@ -221,3 +221,12 @@ def update_comment(cursor: RealDictCursor, update_comment, updated_date, edited_
     """
     cursor.execute(query, [update_comment, updated_date, edited_count, comment_id])
 
+
+@database_common.connection_handler
+def delete_comment(cursor: RealDictCursor, comment_id) -> list:
+    query = """
+    DELETE FROM comment
+    WHERE id = %s
+    """
+    cursor.execute(query, [comment_id])
+

@@ -256,10 +256,6 @@ def edit_comment(comment_id):
 
     comments = data_handler.list_all_comments()
     questions = data_handler.get_all_user_story()
-    answers = data_handler.get_all_user_answer()
-
-    for index in range(len(answers)):
-        question_id = answers[index]["question_id"]
 
     if request.method == "POST":
 
@@ -277,10 +273,20 @@ def edit_comment(comment_id):
 
         data_handler.update_comment(message,time,edit_counter,comment_id)
 
-        return redirect(url_for("display_post", question_id=question_id))
+        #return redirect(url_for("display_post", question_id=question_id))
+        return redirect(url_for("main_page"))
 
-    return render_template("edit_comment.html", comment_id=comment_id, question_id=question_id, comments=comments,
+    return render_template("edit_comment.html", comment_id=comment_id, comments=comments,
                            questions=questions)
+
+
+@app.route("/comments/<int:comment_id>/delete")
+def delete_comment(comment_id):
+
+    data_handler.delete_comment(comment_id)
+
+    return redirect(url_for("main_page"))
+    #return redirect(url_for("display_post", question_id=question_id))
 
 
 if __name__ == '__main__':
