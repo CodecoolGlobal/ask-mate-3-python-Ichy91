@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block head %}
+   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/display_question.css')}}">
+{% endblock %}
+
+{% block content %}
+    <center><br>
+        <h1>Result of questions with searched phrase "{{ phrase }}"</h1><br>
+        <a href="/" id="back-to-posts" class="btn btn-secondary">Main Page</a>
+
+        <hr>
+        {% for question in questions %}
+
+                {% if question.id in ids %}
+                    <h3>{{ question.title }}</h3>
+                      <a href="/question/{{ question.id }}" id="question-message-link">
+                      <p id="question-message">
+                          <br>
+                          {{ question.message }}
+                      </p>
+                      </a>
+                      <hr>
+
+                {% endif %}
+
+
+        {% endfor %}
+    
+    </center>
+
+{% endblock %}

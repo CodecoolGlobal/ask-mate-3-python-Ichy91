@@ -11,6 +11,10 @@
         <a id="add-question" href="/add-question" class="btn btn-warning">Ask here</a>
     </center>
     <br><br>
+    <form action="/search">
+        <input type="text" name="phrase" placeholder="Search for phrase..">
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form><br>
 
     {% if not check %}
         <div class="navbar">

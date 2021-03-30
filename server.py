@@ -158,6 +158,7 @@ def answer_vote_up(answer_id):
 
     return redirect(url_for("display_post", question_id=question_id))
 
+
 @app.route("/answer/<int:answer_id>/vote_down")
 def answer_vote_down(answer_id):
 
@@ -173,6 +174,24 @@ def answer_vote_down(answer_id):
     data_handler.answer_vote(vote_number, answer_id)
 
     return redirect(url_for("display_post", question_id=question_id))
+
+
+@app.route('/search')
+def search_phrase():
+    displayed_phrase = str(request.args.get('phrase'))
+    phrase = displayed_phrase.lower()
+    questions = data_handler.get_all_user_story()
+
+    extended_id_list = (data_handler.get_search_result_questions_id(phrase)
+                        +data_handler.get_search_result_questions_id_of_answers(phrase))
+
+    right_ids = []
+    for element in extended_id_list:
+        if element['id'] not in right_ids:
+            right_ids.append(element['id'])
+
+    return render_template('searched_questions.html', phrase=displayed_phrase, questions=questions, ids=right_ids)
+
 
 if __name__ == '__main__':
     app.run(

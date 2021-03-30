@@ -129,3 +129,25 @@ def view_counter(cursor: RealDictCursor, view_number, question_id) -> list:
     WHERE id = %s
     """
     cursor.execute(query, [view_number, question_id])
+
+
+@database_common.connection_handler
+def get_search_result_questions_id(cursor: RealDictCursor, phrase: str) -> list:
+    query = """
+    SELECT id
+    FROM question
+    WHERE LOWER(title) LIKE %s OR LOWER(message) like %s
+    """
+    cursor.execute(query, ['%'+phrase+'%', '%'+phrase+'%'])
+    return cursor.fetchall()
+
+
+@database_common.connection_handler
+def get_search_result_questions_id_of_answers(cursor: RealDictCursor, phrase: str) -> list:
+    query = """
+    SELECT question_id as id
+    FROM answer
+    WHERE LOWER(message) like %s
+    """
+    cursor.execute(query, ['%'+phrase+'%'])
+    return cursor.fetchall()
