@@ -31,7 +31,6 @@ def display_post(question_id):
 @app.route("/add-question", methods=["GET","POST"])
 def add_question():
     if request.method == "POST":
-
         title = request.form["title"]
         message = request.form["message"]
         time = now_time.strftime("%Y/%m/%d %H:%M:%S")
@@ -66,9 +65,7 @@ def add_new_comment_to_question(question_id):
 
 @app.route("/question/<int:question_id>/new-answer", methods=["GET","POST"])
 def post_answer(question_id):
-
     if request.method == "POST":
-
         answer = request.form["answer"]
         time = now_time.strftime("%Y/%m/%d %H:%M:%S")
 
@@ -76,10 +73,10 @@ def post_answer(question_id):
             image = ""
         else:
             image = "/static/images/" + request.form["image"]
-
         data_handler.add_new_answer(time, question_id, answer, image)
 
         return redirect(url_for("display_post", question_id=question_id))
+
     else:
         questions = data_handler.get_all_user_story()
         return render_template("post_answer.html", title="Post comment", questions=questions, question_id=question_id)
@@ -87,8 +84,6 @@ def post_answer(question_id):
 
 @app.route("/question/<int:question_id>/delete")
 def delete_question(question_id):
-
-    print(question_id)
     data_handler.delete_answers_by_question(question_id)
     data_handler.delete_question(question_id)
 
@@ -97,7 +92,6 @@ def delete_question(question_id):
 
 @app.route("/answer/<int:answer_id>/delete")
 def delete_answer(answer_id):
-
     answers = data_handler.get_all_user_answer()
 
     for index in range(len(answers)):
@@ -110,7 +104,6 @@ def delete_answer(answer_id):
 @app.route("/question/<int:question_id>/edit", methods=["GET","POST"])
 def edit_question(question_id):
     if request.method == "POST":
-
         updated_title = request.form["title"]
         updated_message = request.form["message"]
 
@@ -118,9 +111,11 @@ def edit_question(question_id):
             image = ""
         else:
             image = "/static/images/"+request.form["image"]
+
         #updating
         data_handler.update_user_data(updated_title,updated_message,image, question_id)
         return redirect(url_for("display_post", question_id=question_id))
+
     else:
         questions = data_handler.get_all_user_story()
         return render_template("update.html", title="Update", questions=questions, question_id=question_id)
@@ -155,7 +150,6 @@ def question_vote_down(question_id):
 
 @app.route("/answer/<int:answer_id>/vote_up")
 def answer_vote_up(answer_id):
-
     answers = data_handler.get_all_user_answer()
 
     for index in range(len(answers)):
@@ -168,6 +162,7 @@ def answer_vote_up(answer_id):
     data_handler.answer_vote(vote_number,answer_id)
 
     return redirect(url_for("display_post", question_id=question_id))
+
 
 @app.route("/answer/<int:answer_id>/vote_down")
 def answer_vote_down(answer_id):
@@ -183,6 +178,7 @@ def answer_vote_down(answer_id):
     data_handler.answer_vote(vote_number, answer_id)
 
     return redirect(url_for("display_post", question_id=question_id))
+
 
 if __name__ == '__main__':
     app.run(
