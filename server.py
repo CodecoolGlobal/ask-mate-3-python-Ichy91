@@ -8,11 +8,17 @@ app = Flask(__name__)
 
 
 @app.route("/")
-@app.route("/list")
 def main_page():
+    questions = data_handler.get_five_latest_user_stories()
+
+    return render_template("home.html", questions=questions, title="Home Page")
+
+
+@app.route("/list")
+def list_all_questions():
     questions = data_handler.get_all_user_story()
 
-    return render_template("list.html", questions=questions, title="Home Page")
+    return render_template("list.html", questions=questions, title="All questions")
 
 
 @app.route("/question/<int:question_id>")
@@ -36,7 +42,6 @@ def display_post(question_id):
 
 @app.route("/add-question", methods=["GET","POST"])
 def add_question():
-
     if request.method == "POST":
         title = request.form["title"]
         message = request.form["message"]
@@ -60,7 +65,6 @@ def add_question():
 
 @app.route("/question/<int:question_id>/new-comment", methods=["GET","POST"])
 def add_new_comment_to_question(question_id):
-
     questions = data_handler.get_all_user_story()
 
     if request.method == 'POST':
