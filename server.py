@@ -20,7 +20,6 @@ def list_all_questions():
     column_name = request.args.get('column-name')
     order_direction = request.args.get('order_direction')
 
-    print(column_name, order_direction)
     if column_name and order_direction == 'DESC':
         questions = data_handler.order_list_descending(column_name)
     elif column_name and order_direction == 'ASC':
@@ -214,8 +213,7 @@ def answer_vote_down(answer_id):
 
 @app.route('/search')
 def search_phrase():
-    displayed_phrase = str(request.args.get('phrase'))
-    phrase = displayed_phrase.lower()
+    phrase = str(request.args.get('phrase')).lower()
 
     questions = data_handler.get_all_user_story()
     answers = data_handler.get_all_user_answer()
@@ -228,7 +226,7 @@ def search_phrase():
         if element['id'] not in right_ids:
             right_ids.append(element['id'])
 
-    return render_template('searched_questions.html', phrase=displayed_phrase, questions=questions, ids=right_ids, answers=answers)
+    return render_template('searched_questions.html', phrase=phrase, questions=questions, ids=right_ids, answers=answers)
 
 
 @app.route("/answer/<int:answer_id>/new-comment", methods=["GET","POST"])
