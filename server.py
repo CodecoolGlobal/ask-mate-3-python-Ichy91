@@ -37,7 +37,7 @@ def display_post(question_id):
     question_comment = data_handler.list_question_comment(question_id)
     comments = data_handler.list_all_comments()
     questions_tags = data_handler.question_tags()
-    tags = data_handler.tags()
+    tags = data_handler.get_tags()
 
     for question in questions:
         if question['id'] == question_id:
@@ -303,9 +303,25 @@ def delete_comment(comment_id):
 @app.route("/question/<int:question_id>/new-tag", methods=["GET","POST"])
 def add_question_tag(question_id):
 
-    #add_tags = data_handler.()
+    try:
+        tags = data_handler.get_tags()
+        if request.method == 'POST':
 
-    pass
+            if 'new-tag' in request.form:
+                data_handler.add_new_tag(request.form['new-tag'])
+                new_tag_id = data_handler.max_tag_id()
+                data_handler.insert_new_ids(question_id, new_tag_id[0]['max'])
+
+            elif 'existing-tags' in request.form:
+                existing_tag = request.form['existing-tags']
+                existing_tag_id = data_handler.get_id_to_tag(existing_tag)
+                data_handler.insert_new_ids(question_id, existing_tag_id[0]['id'])
+
+            return redirect(url_for('display_post', question_id=question_id))
+
+        return render_template('adding_tag.html', tags=tags,  question_id=question_id)
+    except:
+        return redirect(url_for('display_post', question_id=question_id))
 
 
 @app.route("/question/<int:question_id>/tag/<int:tag_id>/delete")

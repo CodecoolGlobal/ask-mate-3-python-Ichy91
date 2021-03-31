@@ -106,9 +106,11 @@
         {% for question in questions %}
             {% if question_id == question.id %}
                 <center>
+                <a href="/question/{{ question.id }}/new-tag" class="btn btn-warning" id="edit-question">Add new tag</a>
                 <a href="/question/{{ question.id }}/new-comment" class="btn btn-info" id="edit-question">Add comment</a>
                 <a href="/question/{{ question.id }}/edit" id="edit-question" class="btn btn-primary">Edit the question</a>
                 <a href="/question/{{ question_id }}/delete" id="edit-question" class="btn btn-danger">Delete the question</a>
+
             {% endif %}
         {% endfor %}
                 <a href="/list" id="edit-question" class="btn btn-secondary">Main Page</a>

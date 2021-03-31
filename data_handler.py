@@ -253,7 +253,7 @@ def question_tags(cursor: RealDictCursor) -> list:
 
 
 @database_common.connection_handler
-def tags(cursor: RealDictCursor) -> list:
+def get_tags(cursor: RealDictCursor) -> list:
     query = """
     SELECT *
     FROM tag
@@ -295,3 +295,44 @@ def order_list_ascending(cursor: RealDictCursor, column_name: str) -> list:
     return cursor.fetchall()
 
 
+@database_common.connection_handler
+def add_new_tag(cursor: RealDictCursor, name: str) -> list:
+    query = '''
+        INSERT INTO tag(name) 
+        VALUES (LOWER(%s))
+        '''
+
+    cursor.execute(query, [name])
+
+
+@database_common.connection_handler
+def insert_new_ids(cursor: RealDictCursor, question_id: int, tag_id: int) -> list:
+    query = '''
+        INSERT INTO question_tag(question_id, tag_id) 
+        VALUES (%s, %s)
+        '''
+
+    cursor.execute(query, [question_id, tag_id])
+
+
+@database_common.connection_handler
+def max_tag_id(cursor: RealDictCursor) -> list:
+    query = '''
+        SELECT MAX(id) 
+        FROM tag
+        '''
+
+    cursor.execute(query)
+    return cursor.fetchall()
+
+
+@database_common.connection_handler
+def get_id_to_tag(cursor: RealDictCursor, name: str) -> list:
+    query = '''
+        SELECT id
+        FROM tag
+        WHERE name = %s
+        '''
+
+    cursor.execute(query, [name])
+    return cursor.fetchall()
