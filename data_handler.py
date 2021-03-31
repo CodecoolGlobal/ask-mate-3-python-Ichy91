@@ -293,3 +293,5 @@ def order_list_ascending(cursor: RealDictCursor, column_name: str) -> list:
 
     cursor.execute(query)
     return cursor.fetchall()
+
+

@@ -216,7 +216,9 @@ def answer_vote_down(answer_id):
 def search_phrase():
     displayed_phrase = str(request.args.get('phrase'))
     phrase = displayed_phrase.lower()
+
     questions = data_handler.get_all_user_story()
+    answers = data_handler.get_all_user_answer()
 
     extended_id_list = (data_handler.get_search_result_questions_id(phrase)+
                         data_handler.get_search_result_questions_id_of_answers(phrase))
@@ -226,7 +228,7 @@ def search_phrase():
         if element['id'] not in right_ids:
             right_ids.append(element['id'])
 
-    return render_template('searched_questions.html', phrase=displayed_phrase, questions=questions, ids=right_ids)
+    return render_template('searched_questions.html', phrase=displayed_phrase, questions=questions, ids=right_ids, answers=answers)
 
 
 @app.route("/answer/<int:answer_id>/new-comment", methods=["GET","POST"])
