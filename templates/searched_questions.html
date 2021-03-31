@@ -17,7 +17,6 @@
         {% autoescape false %}
                 {% if question.id in ids %}
                     {% if phrase in question.title %}
-
                         <span id="phrase">{{ question.title | replace(phrase,replaced) }}</span>
                         {% endif %}
                       <a href="/question/{{ question.id }}" id="question-message-link">
