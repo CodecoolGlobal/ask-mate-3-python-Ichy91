@@ -90,7 +90,7 @@ def post_answer(question_id):
         if request.form["image"] == "":
             image = ""
         else:
-            image = "/static/images/" + request.form["image"]
+            image = "images/" + request.form["image"]
         data_handler.add_new_answer(time, question_id, answer, image)
 
         return redirect(url_for("display_post", question_id=question_id))
@@ -130,7 +130,7 @@ def edit_question(question_id):
         if request.form["image"] == "":
             image = ""
         else:
-            image = "/static/images/"+request.form["image"]
+            image = "images/"+request.form["image"]
 
         #updating
         data_handler.update_user_data(updated_title,updated_message,image, question_id)

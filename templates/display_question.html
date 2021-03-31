@@ -73,7 +73,7 @@
             <br>
             {% if answer.image %}
                 <br>
-                <img src="{{ answer.image }}" alt="{{ answer.image }}" id="answer-image">
+                <img src="{{ url_for('static', filename=answer.image )}}" alt="{{ answer.image }}" id="answer-image">
                 <br>
             {% endif %}
 
