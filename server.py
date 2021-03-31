@@ -308,6 +308,10 @@ def add_question_tag(question_id):
         if request.method == 'POST':
 
             if 'new-tag' in request.form:
+                for tag in tags:
+                    if tag['name'] == request.form['new-tag']:
+                        return redirect(url_for('display_post', question_id=question_id))
+
                 data_handler.add_new_tag(request.form['new-tag'])
                 new_tag_id = data_handler.max_tag_id()
                 data_handler.insert_new_ids(question_id, new_tag_id[0]['max'])
