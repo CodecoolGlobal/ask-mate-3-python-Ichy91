@@ -16,7 +16,6 @@ def main_page():
 
 @app.route("/list")
 def list_all_questions():
-
     column_name = request.args.get('column-name')
     order_direction = request.args.get('order_direction')
 
@@ -49,7 +48,6 @@ def display_post(question_id):
                            question_id=question_id, title="Post",
                            question_comment=question_comment,comments=comments,
                            questions_tags=questions_tags, tags=tags)
-
 
 
 @app.route("/add-question", methods=["GET","POST"])
@@ -100,6 +98,7 @@ def post_answer(question_id):
             image = ""
         else:
             image = "images/" + request.form["image"]
+
         data_handler.add_new_answer(time, question_id, answer, image)
 
         return redirect(url_for("display_post", question_id=question_id))
@@ -140,7 +139,6 @@ def edit_question(question_id):
             image = ""
         else:
             image = "images/"+request.form["image"]
-
         #updating
         data_handler.update_user_data(updated_title,updated_message,image, question_id)
 
@@ -214,10 +212,8 @@ def answer_vote_down(answer_id):
 @app.route('/search')
 def search_phrase():
     phrase = str(request.args.get('phrase')).lower()
-
     questions = data_handler.get_all_user_story()
     answers = data_handler.get_all_user_answer()
-
     extended_id_list = (data_handler.get_search_result_questions_id(phrase)+
                         data_handler.get_search_result_questions_id_of_answers(phrase))
 
@@ -238,7 +234,6 @@ def add_answer_comment(answer_id):
         question_id = answers[index]["question_id"]
 
     if request.method == "POST":
-
         time = now_time.strftime("%Y/%m/%d %H:%M:%S")
         message = request.form["new-comment"]
         data_handler.add_comment_to_answer(answer_id,message,time)
@@ -257,7 +252,6 @@ def edit_answer(answer_id):
         question_id = answers[index]["question_id"]
 
     if request.method == "POST":
-
         message = request.form["updated-answer"]
         data_handler.update_answer(message,answer_id)
 
@@ -293,7 +287,6 @@ def edit_comment(comment_id):
 
 @app.route("/comments/<int:comment_id>/delete")
 def delete_comment(comment_id):
-
     data_handler.delete_comment(comment_id)
 
     return redirect(url_for("main_page"))
@@ -302,11 +295,9 @@ def delete_comment(comment_id):
 
 @app.route("/question/<int:question_id>/new-tag", methods=["GET","POST"])
 def add_question_tag(question_id):
-
     try:
         tags = data_handler.get_tags()
         if request.method == 'POST':
-
             if 'new-tag' in request.form:
                 for tag in tags:
                     if tag['name'] == request.form['new-tag']:
@@ -330,8 +321,8 @@ def add_question_tag(question_id):
 
 @app.route("/question/<int:question_id>/tag/<int:tag_id>/delete")
 def delete_tag(question_id,tag_id):
-
     data_handler.delete_tags(question_id, tag_id)
+
     return redirect(url_for("display_post", question_id=question_id))
 
 

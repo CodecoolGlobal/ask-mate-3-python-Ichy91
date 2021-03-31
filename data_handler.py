@@ -278,7 +278,6 @@ def order_list_descending(cursor: RealDictCursor, column_name: str) -> list:
         SELECT * 
         FROM question 
         ORDER BY {} DESC''').format(sql.Identifier(column_name))
-
     cursor.execute(query)
     return cursor.fetchall()
 
@@ -290,7 +289,6 @@ def order_list_ascending(cursor: RealDictCursor, column_name: str) -> list:
         SELECT * 
         FROM question 
         ORDER BY {} ASC''').format(sql.Identifier(column_name))
-
     cursor.execute(query)
     return cursor.fetchall()
 
@@ -301,7 +299,6 @@ def add_new_tag(cursor: RealDictCursor, name: str) -> list:
         INSERT INTO tag(name) 
         VALUES (LOWER(%s))
         '''
-
     cursor.execute(query, [name])
 
 
@@ -311,7 +308,6 @@ def insert_new_ids(cursor: RealDictCursor, question_id: int, tag_id: int) -> lis
         INSERT INTO question_tag(question_id, tag_id) 
         VALUES (%s, %s)
         '''
-
     cursor.execute(query, [question_id, tag_id])
 
 
@@ -321,7 +317,6 @@ def max_tag_id(cursor: RealDictCursor) -> list:
         SELECT MAX(id) 
         FROM tag
         '''
-
     cursor.execute(query)
     return cursor.fetchall()
 
@@ -333,6 +328,5 @@ def get_id_to_tag(cursor: RealDictCursor, name: str) -> list:
         FROM tag
         WHERE name = %s
         '''
-
     cursor.execute(query, [name])
     return cursor.fetchall()
