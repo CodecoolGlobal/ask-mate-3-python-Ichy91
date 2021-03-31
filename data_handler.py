@@ -1,5 +1,5 @@
-import os
-
+from psycopg2 import sql
+from psycopg2.extensions import AsIs
 from psycopg2.extras import RealDictCursor
 
 import database_common
@@ -271,3 +271,25 @@ def delete_tags(cursor: RealDictCursor, question_id, tag_id) -> list:
     cursor.execute(query, [question_id, tag_id])
 
 
+@database_common.connection_handler
+def order_list_descending(cursor: RealDictCursor, column_name: str) -> list:
+    query = sql.SQL(
+        '''
+        SELECT * 
+        FROM question 
+        ORDER BY {} DESC''').format(sql.Identifier(column_name))
+
+    cursor.execute(query)
+    return cursor.fetchall()
+
+
+@database_common.connection_handler
+def order_list_ascending(cursor: RealDictCursor, column_name: str) -> list:
+    query = sql.SQL(
+        '''
+        SELECT * 
+        FROM question 
+        ORDER BY {} ASC''').format(sql.Identifier(column_name))
+
+    cursor.execute(query)
+    return cursor.fetchall()

@@ -16,7 +16,17 @@ def main_page():
 
 @app.route("/list")
 def list_all_questions():
-    questions = data_handler.get_all_user_story()
+
+    column_name = request.args.get('column-name')
+    order_direction = request.args.get('order_direction')
+
+    print(column_name, order_direction)
+    if column_name and order_direction == 'DESC':
+        questions = data_handler.order_list_descending(column_name)
+    elif column_name and order_direction == 'ASC':
+        questions = data_handler.order_list_ascending(column_name)
+    else:
+        questions = data_handler.get_all_user_story()
 
     return render_template("list.html", questions=questions, title="All questions")
 
