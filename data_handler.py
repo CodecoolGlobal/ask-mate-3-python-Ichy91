@@ -66,12 +66,13 @@ def add_new_answer(cursor: RealDictCursor, date: str, question_id, message: str,
 
 
 @database_common.connection_handler
-def update_user_answer(cursor: RealDictCursor, update_answer:str) -> list:
+def update_user_answer(cursor: RealDictCursor, message, image, answer_id) -> list:
     query = """
     UPDATE answer
-    SET message = %s
+    SET message = %s, image = %s
+    WHERE id = %s
     """
-    cursor.execute(query, [update_answer])
+    cursor.execute(query, [message, image, answer_id])
 
 
 @database_common.connection_handler
@@ -214,16 +215,6 @@ def list_all_comments(cursor: RealDictCursor) -> list:
 
 
 @database_common.connection_handler
-def update_answer(cursor: RealDictCursor, update_answer, answer_id) -> list:
-    query = """
-    UPDATE answer
-    SET message = %s
-    WHERE id = %s
-    """
-    cursor.execute(query, [update_answer, answer_id])
-
-
-@database_common.connection_handler
 def update_comment(cursor: RealDictCursor, update_comment, updated_date, edited_count,  comment_id) -> list:
     query = """
     UPDATE comment
@@ -234,12 +225,30 @@ def update_comment(cursor: RealDictCursor, update_comment, updated_date, edited_
 
 
 @database_common.connection_handler
-def delete_comment(cursor: RealDictCursor, comment_id) -> list:
+def delete_comment(cursor: RealDictCursor, answer_id) -> list:
+    query = """
+    DELETE FROM comment
+    WHERE answer_id = %s
+    """
+    cursor.execute(query, [answer_id])
+
+
+@database_common.connection_handler
+def delete_comment_id(cursor: RealDictCursor, comment_id) -> list:
     query = """
     DELETE FROM comment
     WHERE id = %s
     """
     cursor.execute(query, [comment_id])
+
+
+@database_common.connection_handler
+def delete_comment_question(cursor: RealDictCursor, question_id) -> list:
+    query = """
+    DELETE FROM comment
+    WHERE question_id = %s
+    """
+    cursor.execute(query, [question_id])
 
 
 @database_common.connection_handler
@@ -330,3 +339,11 @@ def get_id_to_tag(cursor: RealDictCursor, name: str) -> list:
         '''
     cursor.execute(query, [name])
     return cursor.fetchall()
+
+@database_common.connection_handler
+def delete_tag_before_delete_question(cursor: RealDictCursor, question_id) -> list:
+    query = """
+    DELETE FROM question_tag
+    WHERE question_id = %s
+    """
+    cursor.execute(query, [question_id])

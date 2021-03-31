@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 
+{% block head %}
+   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/post_answer.css')}}">
+{% endblock %}
+
 {% block content %}
 
         {% for comment in comments %}
@@ -16,10 +20,19 @@
 
             </form>
 
+    {% for question in questions %}
+        {% if question.id == comment.question_id%}
+    <br><br><a href="/question/{{ question.id }}" id="back-to-posts">Back to post</a>
         {% endif %}
     {% endfor %}
 
-    <br><br><a href="/question/{{ question_id }}" id="back-to-posts">Back to post</a>
+    {% for answer in answers %}
+        {% if answer.id == comment.answer_id %}
+            <br><br><a href="/question/{{ answer.question_id }}" id="back-to-posts">Back to post</a>
+        {% endif %}
+    {% endfor %}
 
+        {% endif %}
+    {% endfor %}
 
 {% endblock %}

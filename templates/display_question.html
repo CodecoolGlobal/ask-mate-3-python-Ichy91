@@ -17,7 +17,7 @@
                         {% for tag in tags %}
                             {% for question_tag in questions_tags %}
                                 {% if question_id == question_tag.question_id and tag.id == question_tag.tag_id %}
-                                    - [{{ tag.name }}]
+                                    [{{ tag.name }}]
                                     <a href="/question/{{ question_id }}/tag/{{ tag.id }}/delete"
                                        id="answer-delete">X</a>
                                 {% endif %}
@@ -44,7 +44,9 @@
                         <br>Written on: {{ comment.submission_time }}</small><br>
                     <br>
                     <a href="/comments/{{ comment.id }}/delete" id="answer-delete">X</a>
-                    {{ comment.message }} <a href="/comment/{{ comment.id }}/edit">Edit</a>
+                    {{ comment.message }}<br><br>
+                    <a href="/comment/{{ comment.id }}/edit" id="question-down-vote" class="btn btn-primary">Edit</a>
+                <hr>
                 </div>
                 {% endif %}
             {% endfor %}
@@ -62,21 +64,27 @@
         {% endif %}
     {% endfor %}
 
-    <hr>
+    <hr><hr>
     {% for answer in answers %}
         {% if question_id == answer.question_id %}
             <small>Written on: {{ answer.submission_time }}</small>
             <small id="answer-vote-number">Vote(s):<br>⇅ {{ answer.vote_number }}</small><br>
             <a href="/answer/{{ answer.id }}/delete" id="answer-delete">X</a>
                 {{ answer.message.capitalize() }}
-            <a href="/answer/{{ answer.id }}/edit">Edit</a>
             <br>
             {% if answer.image %}
                 <br>
                 <img src="{{ url_for('static', filename=answer.image )}}" alt="{{ answer.image }}" id="answer-image">
                 <br>
             {% endif %}
-
+            <br>
+            <a href="/answer/{{ answer.id }}/edit" id="question-down-vote" class="btn btn-primary">Edit</a>
+            <a href="/answer/{{ answer.id }}/new-comment" id="answer-vote-down" class="btn btn-info">Add comment</a>
+            <a href="/answer/{{ answer.id }}/vote_up" id="answer-vote-up" class="btn btn-success">
+                Up vote</a>
+            <a href="/answer/{{ answer.id }}/vote_down" id="answer-vote-down" class="btn btn-danger">
+                Down vote</a>
+            <br>
             <br><strong>Comment(s) for the answer:</strong>
             {% for comment in comments %}
                 {% if answer.id == comment.answer_id %}
@@ -86,19 +94,13 @@
                         <br>Written on: {{ comment.submission_time }}
                      </small><br>
                     <br><a href="/comments/{{ comment.id }}/delete" id="answer-delete">X</a>
-                    {{ comment.message }} <a href="/comment/{{ comment.id }}/edit">Edit</a><br>
+                        {{ comment.message }}<br><br>
+                    <a href="/comment/{{ comment.id }}/edit" id="question-down-vote" class="btn btn-primary">Edit</a>
+                    <hr>
                 </div>
-
                 {% endif %}
             {% endfor %}
-            <br><br>
-            <a href="/answer/{{ answer.id }}/new-comment">Add comment</a>
-            <a href="/answer/{{ answer.id }}/vote_up" id="answer-vote-up" class="btn btn-success">
-                Up vote</a>
-            <a href="/answer/{{ answer.id }}/vote_down" id="answer-vote-down" class="btn btn-danger">
-                Down vote</a>
-
-            <hr>
+        <hr>
         {% endif %}
     {% endfor %}
 

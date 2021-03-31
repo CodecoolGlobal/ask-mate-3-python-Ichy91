@@ -21,13 +21,13 @@
                       <a href="/question/{{ question.id }}" id="question-message-link">
                       <p id="question-message">
                           <br>
-                          {{ question.message | replace(phrase, replaced) }}
+                          {{ question.message | lower | replace(phrase, replaced) }}
                       </p>
                       </a><br>
 
                     {% for answer in answers %}
-                        {% if answer.question_id == question.id and phrase in answer.message %}
-                            <span id="answer-phrase-placement">Answer --> {{ answer.message | replace(phrase, replaced)}}<br></span>
+                        {% if answer.question_id == question.id and phrase in answer.message.lower() %}
+                            <span id="answer-phrase-placement">Answer --> {{ answer.message | lower | replace(phrase, replaced)}}<br></span>
                         {% endif %}
                     {% endfor %}
                       <hr>

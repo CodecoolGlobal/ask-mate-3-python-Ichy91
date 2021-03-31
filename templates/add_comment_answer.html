@@ -16,10 +16,7 @@
             <center><button type="submit" class="btn-primary" id="submit">Add your comment</button></center>
             </form>
 
-        {% for question in questions %}
-            {% if question_id == question.id %}
-    <br><br><a href="/question/{{ question.id }}" id="back-to-posts">Back to post</a>
-            {% endif %}
-        {% endfor %}
+
+    <br><br><a href="/" id="back-to-posts">Back to home page</a>
 
 {% endblock %}

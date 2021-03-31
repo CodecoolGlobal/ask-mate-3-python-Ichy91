@@ -6,18 +6,20 @@
 
 {% block content %}
     <center><br>
-        <h1>LIST OF ALL QUESTIONS</h1>
+        <h1>Welcome on the Askers forum!</h1>
         <p id="add-question-title">If you want to ask something just click down below!</p>
         <a id="add-question" href="/add-question" class="btn btn-warning">Ask here</a>
     </center>
     <br><br>
-    <p>
+
+    <div style="float:left">
     <form action="/search">
         <input type="text" name="phrase" placeholder="Search for phrase..">
         <button type="submit" class="btn btn-primary">Search</button>
-        <a href="/" id="edit-question" class="btn btn-secondary">Latest questions</a>
     </form>
-    </p>
+     </div>
+
+    <div style="float:right">
 
     <form action="/list">
         <label for="column-name">Filter by column:</label>
@@ -29,14 +31,17 @@
             <option value="vote_number">Number of votes</option>
         </select>
 
-        <label for="order_direction">Filter by column:</label>
+        <label for="order_direction">Order by:</label>
         <select name="order_direction">
             <option value="DESC">Descending</option>
             <option value="ASC">Ascending</option>
         </select>
-
-        <button type="submit" class="btn btn-primary" style="font-size:15px">Sorting</button>
+        <button type="submit" class="btn btn-primary">Sorting</button>
     </form>
+
+    </div>
+        <br><br>
+        <a href="/" id="edit-question" class="btn btn-secondary">Latest questions</a>
         <hr>
         <br>
 

@@ -62,8 +62,6 @@ def add_question():
         else:
             image = "images/" + request.form["image"]
 
-        #image = my_request.form.files["image"]
-        #upload_image = util.upload_file(image,next_id,"Q")
 
         data_handler.add_new_question(time, title, message, image)
 
@@ -90,6 +88,7 @@ def add_new_comment_to_question(question_id):
 
 @app.route("/question/<int:question_id>/new-answer", methods=["GET","POST"])
 def post_answer(question_id):
+
     if request.method == "POST":
         answer = request.form["answer"]
         time = now_time.strftime("%Y/%m/%d %H:%M:%S")
@@ -111,7 +110,22 @@ def post_answer(question_id):
 
 @app.route("/question/<int:question_id>/delete")
 def delete_question(question_id):
+
+    answers = data_handler.get_all_user_answer()
+    correct_answer_ids = []
+
+    for answer in answers:
+        if answer["question_id"] == question_id:
+            correct_answer_ids.append(answer["id"])
+
+    for answer_id in correct_answer_ids:
+        data_handler.delete_comment(answer_id)
+
     data_handler.delete_answers_by_question(question_id)
+    data_handler.delete_comment_question(question_id)
+    data_handler.delete_tag_before_delete_question(question_id)
+
+
     data_handler.delete_question(question_id)
 
     return redirect(url_for("main_page"))
@@ -120,10 +134,14 @@ def delete_question(question_id):
 @app.route("/answer/<int:answer_id>/delete")
 def delete_answer(answer_id):
     answers = data_handler.get_all_user_answer()
+    comments = data_handler.list_answer_comment(answer_id)
 
-    for index in range(len(answers)):
-        question_id = answers[index]["question_id"]
+    for answer in answers:
+        print(answer["id"], answer_id)
+        if answer["id"] == answer_id:
+            question_id = answer["question_id"]
 
+    data_handler.delete_comment(answer_id)
     data_handler.delete_answer(answer_id)
 
     return redirect(url_for("display_post", question_id=question_id))
@@ -212,8 +230,11 @@ def answer_vote_down(answer_id):
 @app.route('/search')
 def search_phrase():
     phrase = str(request.args.get('phrase')).lower()
+
+
     questions = data_handler.get_all_user_story()
     answers = data_handler.get_all_user_answer()
+
     extended_id_list = (data_handler.get_search_result_questions_id(phrase)+
                         data_handler.get_search_result_questions_id_of_answers(phrase))
 
@@ -245,15 +266,24 @@ def add_answer_comment(answer_id):
 
 @app.route("/answer/<int:answer_id>/edit", methods=["GET","POST"])
 def edit_answer(answer_id):
+
     answers = data_handler.get_all_user_answer()
     questions = data_handler.get_all_user_answer()
 
-    for index in range(len(answers)):
-        question_id = answers[index]["question_id"]
+    for answer in answers:
+        if answer["id"] == answer_id:
+            question_id = answer["question_id"]
 
     if request.method == "POST":
         message = request.form["updated-answer"]
-        data_handler.update_answer(message,answer_id)
+
+        if request.form["image"] == "":
+            image = ""
+        else:
+            image = "images/"+request.form["image"]
+
+
+        data_handler.update_user_answer(message,image,answer_id)
 
         return redirect(url_for("display_post", question_id=question_id))
 
@@ -264,6 +294,7 @@ def edit_answer(answer_id):
 def edit_comment(comment_id):
     comments = data_handler.list_all_comments()
     questions = data_handler.get_all_user_story()
+    answers = data_handler.get_all_user_answer()
 
     if request.method == "POST":
         time = now_time.strftime("%Y/%m/%d %H:%M:%S")
@@ -282,12 +313,16 @@ def edit_comment(comment_id):
         return redirect(url_for("main_page"))
 
     return render_template("edit_comment.html", comment_id=comment_id, comments=comments,
-                           questions=questions)
+                           questions=questions, answers=answers)
 
 
 @app.route("/comments/<int:comment_id>/delete")
 def delete_comment(comment_id):
-    data_handler.delete_comment(comment_id)
+
+    data_handler.delete_comment_id(comment_id)
+
+    questions = data_handler.get_all_user_story()
+    answers = data_handler.get_all_user_answer()
 
     return redirect(url_for("main_page"))
     #return redirect(url_for("display_post", question_id=question_id))
@@ -321,6 +356,7 @@ def add_question_tag(question_id):
 
 @app.route("/question/<int:question_id>/tag/<int:tag_id>/delete")
 def delete_tag(question_id,tag_id):
+
     data_handler.delete_tags(question_id, tag_id)
 
     return redirect(url_for("display_post", question_id=question_id))

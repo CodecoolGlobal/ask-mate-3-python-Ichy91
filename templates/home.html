@@ -12,16 +12,15 @@
     </center>
     <br><br>
 
-    <div>
+    <div style="float:left">
     <form action="/search">
         <input type="text" name="phrase" placeholder="Search for phrase..">
         <button type="submit" class="btn btn-primary">Search</button>
-        <a href="/list" id="edit-question" class="btn btn-secondary">List all questions</a>
     </form>
     </div>
 
-    <br>
-    <div>
+    <div style="float:right">
+
         <form action="/list">
         <label for="column-name">Filter by column:</label>
         <select name="column-name">
@@ -32,7 +31,7 @@
             <option value="vote_number">Number of votes</option>
         </select>
 
-        <label for="order_direction">Filter by column:</label>
+        <label for="order_direction">Order by:</label>
         <select name="order_direction">
             <option value="DESC">Descending</option>
             <option value="ASC">Ascending</option>
@@ -40,7 +39,11 @@
 
         <button type="submit" class="btn btn-primary">Sorting</button>
     </form>
+
     </div>
+
+    <br><br>
+    <a href="/list" id="edit-question" class="btn btn-secondary">List all questions</a>
     <hr>
         <br>
 
