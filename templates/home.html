@@ -11,39 +11,37 @@
         <a id="add-question" href="/add-question" class="btn btn-warning">Ask here</a>
     </center>
     <br><br>
-    <p>
+
+    <div>
     <form action="/search">
         <input type="text" name="phrase" placeholder="Search for phrase..">
         <button type="submit" class="btn btn-primary">Search</button>
         <a href="/list" id="edit-question" class="btn btn-secondary">List all questions</a>
     </form>
-    </p>
+    </div>
 
-    {% if not check %}
-        <div class="navbar">
-            <a href="/list/submission_time/desc">Date</a> {# class="active" #}
-            <a href="/list/view_number/desc">View</a>
-            <a href="/list/vote_number/desc">Vote</a>
-            <a href="/list/title/desc">Title</a>
-        </div>
-    {% endif %}
-        {% if check == "asc" %}
-        <div class="navbar">
-            <a href="/list/submission_time/desc">Date</a> {# class="active" #}
-            <a href="/list/view_number/desc">View</a>
-            <a href="/list/vote_number/desc">Vote</a>
-            <a href="/list/title/desc">Title</a>
-        </div>
-    {% endif %}
-        {% if check == "desc"%}
-        <div class="navbar">
-            <a href="/list/submission_time/asc">Date</a> {# class="active" #}
-            <a href="/list/view_number/asc">View</a>
-            <a href="/list/vote_number/asc">Vote</a>
-            <a href="/list/title/asc">Title</a>
-        </div>
-    {% endif %}
+    <br>
+    <div>
+        <form action="/list">
+        <label for="column-name">Filter by column:</label>
+        <select name="column-name">
+            <option value="title">Title</option>
+            <option value="submission_time">Submission time</option>
+            <option value="message">Message</option>
+            <option value="view_number">Number of views</option>
+            <option value="vote_number">Number of votes</option>
+        </select>
 
+        <label for="order_direction">Filter by column:</label>
+        <select name="order_direction">
+            <option value="DESC">Descending</option>
+            <option value="ASC">Ascending</option>
+        </select>
+
+        <button type="submit" class="btn btn-primary">Sorting</button>
+    </form>
+    </div>
+    <hr>
         <br>
 
 {% for question in questions %}

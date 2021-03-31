@@ -35,34 +35,9 @@
             <option value="ASC">Ascending</option>
         </select>
 
-        <button type="submit">Sort</button>
+        <button type="submit" class="btn btn-primary" style="font-size:15px">Sorting</button>
     </form>
-
-    {% if not check %}
-        <div class="navbar">
-            <a href="/list/submission_time/desc">Date</a> {# class="active" #}
-            <a href="/list/view_number/desc">View</a>
-            <a href="/list/vote_number/desc">Vote</a>
-            <a href="/list/title/desc">Title</a>
-        </div>
-    {% endif %}
-        {% if check == "asc" %}
-        <div class="navbar">
-            <a href="/list/submission_time/desc">Date</a> {# class="active" #}
-            <a href="/list/view_number/desc">View</a>
-            <a href="/list/vote_number/desc">Vote</a>
-            <a href="/list/title/desc">Title</a>
-        </div>
-    {% endif %}
-        {% if check == "desc"%}
-        <div class="navbar">
-            <a href="/list/submission_time/asc">Date</a> {# class="active" #}
-            <a href="/list/view_number/asc">View</a>
-            <a href="/list/vote_number/asc">Vote</a>
-            <a href="/list/title/asc">Title</a>
-        </div>
-    {% endif %}
-
+        <hr>
         <br>
 
 {% for question in questions %}

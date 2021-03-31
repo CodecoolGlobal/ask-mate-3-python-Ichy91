@@ -16,6 +16,7 @@
         {% for question in questions %}
         {% autoescape false %}
                 {% if question.id in ids %}
+
                     <span id="phrase">{{ question.title | lower | replace(phrase,replaced) }}</span>
                       <a href="/question/{{ question.id }}" id="question-message-link">
                       <p id="question-message">
