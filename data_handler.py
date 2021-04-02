@@ -9,7 +9,7 @@ import database_common
 def get_all_user_story(cursor: RealDictCursor) -> list:
     query = """
     SELECT * FROM question
-    ORDER BY submission_time DESC
+    ORDER BY submission_time ASC
     """
     cursor.execute(query)
     return cursor.fetchall()

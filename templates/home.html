@@ -7,7 +7,7 @@
     {% block header %}
 
     <div class="topnav">
-        <a href="/list" id="nav-hrefs" class="btn btn-secondary">List all questions</a>
+        <a href="/list" id="nav-hrefs" class="btn-secondary">List all questions</a> {# maybe login/register panel #}
         <div class="search-container">
             <form action="/search">
                 <input type="text" name="phrase" placeholder="Search for phrase..">
@@ -15,11 +15,13 @@
             </form>
         </div>
     </div>
+
     <br>
 
         <center>
             <h1>Welcome on the Askers forum!</h1>
             <p style="font-size: 17px">Enjoy your stay!</p>
+            <a id="nav-hrefs" href="/add-question" class="btn btn-danger">Ask here</a>
         </center>
         <br><hr>
         <br>
@@ -43,11 +45,9 @@
                 <option value="DESC">Descending</option>
                 <option value="ASC">Ascending</option>
             </select>
-            <button type="submit" class="btn btn-primary">Sorting</button>
+            <button type="submit" class="btn-primary">Sorting</button>
         </form>
     <br>
-
-    <a id="nav-hrefs" href="/add-question" class="btn btn-danger">Ask here</a><br><br><br>
 
     <section>
         {% for question in questions %}

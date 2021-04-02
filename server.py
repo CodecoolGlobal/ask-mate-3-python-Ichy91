@@ -229,7 +229,7 @@ def answer_vote_down(answer_id):
 
 @app.route('/search')
 def search_phrase():
-    phrase = str(request.args.get('phrase'))
+    phrase = str(request.args.get('phrase')).lower()
 
 
     questions = data_handler.get_all_user_story()

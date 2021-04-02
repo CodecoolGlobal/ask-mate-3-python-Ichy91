@@ -106,7 +106,7 @@ INSERT INTO question VALUES (3, '2017-05-01 10:41:00', 1364, 57, 'Drawing canvas
 SELECT pg_catalog.setval('question_id_seq', 3, true);
 
 INSERT INTO answer VALUES (1, '2017-04-28 16:49:00', 4, 1, 'You need to use brackets: my_list = []', NULL);
-INSERT INTO answer VALUES (2, '2017-04-25 14:42:00', 35, 1, 'Look it up in the Python docs', 'images/image2.jpg');
+INSERT INTO answer VALUES (2, '2017-04-25 14:42:00', 35, 1, 'Look it up in the Python docs', 'images/image1.png');
 SELECT pg_catalog.setval('answer_id_seq', 2, true);
 
 INSERT INTO comment VALUES (1, 1, NULL, 'Please clarify the question as it is too vague!', '2017-05-01 05:49:00', 0);

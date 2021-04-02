@@ -26,6 +26,7 @@
 {% block content %}
     <main>
         <section>
+
             {% set highlight = "<span style='color:red'>{{phrase}}</span>" %}
             {% set replaced = highlight | replace('{{phrase}}',phrase) %}
 
