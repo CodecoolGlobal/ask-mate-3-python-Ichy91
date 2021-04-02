@@ -1,38 +1,66 @@
 {% extends "base.html" %}
 
 {% block head %}
-   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/display_question.css')}}">
+   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/list.css')}}">
 {% endblock %}
 
+    {% block header %}
+
+    <div class="topnav">
+        <a href="/" id="nav-hrefs" class="btn btn-secondary">Main Page</a>
+        <div class="search-container">
+            <form action="/search">
+                <input type="text" name="phrase" placeholder="Search for phrase..">
+                <button type="submit">🔎</button>
+            </form>
+        </div>
+    </div>
+
+        <br>
+        <center><h1>Result of questions with searched phrase "{{ phrase }}"</h1><br></center>
+        <hr><br>
+
+    {% endblock %}
+
+
 {% block content %}
-    <br>
-        <center><h1>Result of questions with searched phrase "{{ phrase }}"</h1><br>
-        <a href="/" id="back-to-posts" class="btn btn-secondary">Main Page</a></center>
+    <main>
+        <section>
+            {% set highlight = "<span style='color:red'>{{phrase}}</span>" %}
+            {% set replaced = highlight | replace('{{phrase}}',phrase) %}
 
-        <hr>
-        {% set highlight = "<span style='color:red'>{{phrase}}</span>" %}
-        {% set replaced = highlight | replace('{{phrase}}',phrase) %}
+            {% for question in questions %}
+            <article>
+            {% autoescape false %}
+                    {% if question.id in ids %}
 
-        {% for question in questions %}
-        {% autoescape false %}
-                {% if question.id in ids %}
+                        <small id="question-views">{{ question.view_number }} views</small>
+                        <h2><strong>{{ question.title | replace(phrase,replaced) }}</strong></h2>
+                        <small id="question-small-tag">{{ question.submission_time }} | ⇅{{ question.vote_number }}</small>
+                        <br>
 
-                    <span id="phrase">{{ question.title | lower | replace(phrase,replaced) }}</span>
-                      <a href="/question/{{ question.id }}" id="question-message-link">
-                      <p id="question-message">
-                          <br>
-                          {{ question.message | lower | replace(phrase, replaced) }}
-                      </p>
-                      </a><br>
+                          <a href="/question/{{ question.id }}" id="question-message-link">
+                              <br>{{ question.message | replace(phrase, replaced) }}</a>
+                        <br><br><br>
 
-                    {% for answer in answers %}
-                        {% if answer.question_id == question.id and phrase in answer.message.lower() %}
-                            <span id="answer-phrase-placement">Answer --> {{ answer.message | lower | replace(phrase, replaced)}}<br></span>
+                        {% if question.image %}
+                         <img src="static/{{ question.image }}" alt="{{ question.image }}" id="question-image">
+                          <br><br><br>
                         {% endif %}
-                    {% endfor %}
-                      <hr>
-                {% endif %}
-            {% endautoescape %}
+
+                        {% for answer in answers %}
+                            {% if answer.question_id == question.id and phrase in answer.message.lower() %}
+                                <div class="answer-phrase-placement">- {{ answer.message | replace(phrase, replaced)}}<br></div>
+                            {% endif %}
+                        {% endfor %}
+                        <br>
+
+                    {% endif %}
+                {% endautoescape %}
+
+            </article>
         {% endfor %}
 
+        </section>
+    </main>
 {% endblock %}

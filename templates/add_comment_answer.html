@@ -5,6 +5,8 @@
 {% endblock %}
 
 {% block content %}
+    <main>
+        <section>
 
             <form action="/answer/{{ answer_id }}/new-comment" method="POST">
 
@@ -16,7 +18,8 @@
             <center><button type="submit" class="btn-primary" id="submit">Add your comment</button></center>
             </form>
 
+            <br><br><a href="/" id="back-to-posts">Back to home page</a>
 
-    <br><br><a href="/" id="back-to-posts">Back to home page</a>
-
+        </section>
+    </main>
 {% endblock %}

@@ -6,33 +6,39 @@
 
 {% block content %}
 
-        {% for comment in comments %}
-            {% if comment_id == comment.id %}
+    <main>
+        <section>
 
-                <form action="/comment/{{ comment.id }}/edit" method="POST">
+            {% for comment in comments %}
+                {% if comment_id == comment.id %}
 
-                <div class="form-group">
-                    <label for="answer" id="label-comment">Your comment</label><br>
-                    <textarea class="form-control" id="answer" minlength ="5" name="updated-comment"
-                              required>{{ comment.message }}</textarea><br>
-                </div>
-            <center><button type="submit" class="btn-primary" id="submit">Edit your comment</button></center>
+                    <form action="/comment/{{ comment.id }}/edit" method="POST">
 
-            </form>
+                    <div class="form-group">
+                        <label for="answer" id="label-comment">Your comment</label><br>
+                        <textarea class="form-control" id="answer" minlength ="5" name="updated-comment"
+                                  required>{{ comment.message }}</textarea><br>
+                    </div>
+                <center><button type="submit" class="btn-primary" id="submit">Edit your comment</button></center>
 
-    {% for question in questions %}
-        {% if question.id == comment.question_id%}
-    <br><br><a href="/question/{{ question.id }}" id="back-to-posts">Back to post</a>
-        {% endif %}
-    {% endfor %}
+                </form>
 
-    {% for answer in answers %}
-        {% if answer.id == comment.answer_id %}
-            <br><br><a href="/question/{{ answer.question_id }}" id="back-to-posts">Back to post</a>
-        {% endif %}
-    {% endfor %}
+        {% for question in questions %}
+            {% if question.id == comment.question_id%}
+        <br><br><a href="/question/{{ question.id }}"  class="btn btn-info" id="back-to-posts">Back to post</a>
+            {% endif %}
+        {% endfor %}
 
-        {% endif %}
-    {% endfor %}
+        {% for answer in answers %}
+            {% if answer.id == comment.answer_id %}
+                <br><br><a href="/question/{{ answer.question_id }}" id="back-to-posts">Back to post</a>
+            {% endif %}
+        {% endfor %}
+
+            {% endif %}
+        {% endfor %}
+
+        </section>
+    </main>
 
 {% endblock %}

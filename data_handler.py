@@ -147,7 +147,7 @@ def get_search_result_questions_id(cursor: RealDictCursor, phrase: str) -> list:
     query = """
     SELECT id
     FROM question
-    WHERE LOWER(title) LIKE %s OR LOWER(message) like %s
+    WHERE title ilike %s OR message ilike %s
     """
     cursor.execute(query, ['%'+phrase+'%', '%'+phrase+'%'])
     return cursor.fetchall()
@@ -180,7 +180,7 @@ def get_search_result_questions_id_of_answers(cursor: RealDictCursor, phrase: st
     query = """
     SELECT question_id as id
     FROM answer
-    WHERE LOWER(message) like %s 
+    WHERE message ilike %s 
     """
     cursor.execute(query, ['%'+phrase+'%'])
     return cursor.fetchall()

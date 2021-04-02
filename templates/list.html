@@ -4,61 +4,75 @@
    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/list.css')}}">
 {% endblock %}
 
-{% block content %}
-    <center><br>
-        <h1>Welcome on the Askers forum!</h1>
-        <p id="add-question-title">If you want to ask something just click down below!</p>
-        <a id="add-question" href="/add-question" class="btn btn-warning">Ask here</a>
-    </center>
-    <br><br>
+    {% block header %}
 
-    <div style="float:left">
-    <form action="/search">
-        <input type="text" name="phrase" placeholder="Search for phrase..">
-        <button type="submit" class="btn btn-primary">Search</button>
-    </form>
-     </div>
-
-    <div style="float:right">
-
-    <form action="/list">
-        <label for="column-name">Filter by column:</label>
-        <select name="column-name">
-            <option value="title">Title</option>
-            <option value="submission_time">Submission time</option>
-            <option value="message">Message</option>
-            <option value="view_number">Number of views</option>
-            <option value="vote_number">Number of votes</option>
-        </select>
-
-        <label for="order_direction">Order by:</label>
-        <select name="order_direction">
-            <option value="DESC">Descending</option>
-            <option value="ASC">Ascending</option>
-        </select>
-        <button type="submit" class="btn btn-primary">Sorting</button>
-    </form>
-
+    <div class="topnav">
+        <a href="/" id="nav-hrefs" class="btn btn-secondary">Latest questions</a>
+        <div class="search-container">
+            <form action="/search">
+                <input type="text" name="phrase" placeholder="Search for phrase..">
+                <button type="submit">🔎</button>
+            </form>
+        </div>
     </div>
-        <br><br>
-        <a href="/" id="edit-question" class="btn btn-secondary">Latest questions</a>
-        <hr>
+    <br>
+
+        <center>
+            <h1>Welcome on the Askers forum!</h1>
+            <p style="font-size: 17px">Enjoy your stay!</p>
+        </center>
+        <br><hr>
         <br>
 
-{% for question in questions %}
-      <small id="question-views">{{ question.view_number }} views</small>
-      <h3>{{ question.title }} ⇅{{ question.vote_number }}</h3>
-      <small id="question-submission_time">Written on: {{ question.submission_time }}</small>
-  <a href="/question/{{ question.id }}" id="question-message-link">
-  <p id="question-message">
-      <br>
-      {{ question.message }}
-  </p>
-  </a>
-      {% if question.image %}
-         <center><img src="static/{{ question.image }}" alt="{{ question.image }}" id="question-image"></center>
-      {% endif %}
-    <hr>
+    {% endblock %}
 
-    {% endfor %}
+{% block content %}
+    <main>
+        <form action="/list">
+            <label for="column-name">Filter by column:</label>
+            <select name="column-name">
+                <option value="title">Title</option>
+                <option value="submission_time">Submission time</option>
+                <option value="message">Message</option>
+                <option value="view_number">Number of views</option>
+                <option value="vote_number">Number of votes</option>
+            </select>
+
+            <br><label for="order_direction">Order by:</label>
+            <select name="order_direction">
+                <option value="DESC">Descending</option>
+                <option value="ASC">Ascending</option>
+            </select>
+            <button type="submit" class="btn btn-primary">Sorting</button>
+        </form>
+    <br>
+
+    <a id="nav-hrefs" href="/add-question" class="btn btn-danger">Ask here</a><br><br><br>
+
+    <section>
+        {% for question in questions %}
+
+            <article>
+                  <small id="question-views">{{ question.view_number }} views</small>
+                  <h2><strong>{{ question.title }}</strong></h2>
+                  <small id="question-small-tag">{{ question.submission_time }} | ⇅{{ question.vote_number }}</small>
+                  <br>
+
+                  <a href="/question/{{ question.id }}" id="question-message-link">
+                  <br>{{ question.message }}</a>
+                  <br><br><br>
+
+
+                  {% if question.image %}
+                     <img src="static/{{ question.image }}" alt="{{ question.image }}" id="question-image">
+                      <br><br>
+                  {% endif %}
+                <br>
+
+            </article>
+
+        {% endfor %}
+        </section>
+
+    </main>
 {% endblock %}

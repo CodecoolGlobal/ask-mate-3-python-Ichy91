@@ -165,7 +165,7 @@ def edit_question(question_id):
     else:
         questions = data_handler.get_all_user_story()
 
-        return render_template("update.html", title="Update", questions=questions, question_id=question_id)
+        return render_template("edit_question.html", title="Update", questions=questions, question_id=question_id)
 
 
 #Vote section
@@ -229,7 +229,7 @@ def answer_vote_down(answer_id):
 
 @app.route('/search')
 def search_phrase():
-    phrase = str(request.args.get('phrase')).lower()
+    phrase = str(request.args.get('phrase'))
 
 
     questions = data_handler.get_all_user_story()
@@ -336,7 +336,7 @@ def add_question_tag(question_id):
             if 'new-tag' in request.form:
                 for tag in tags:
                     if tag['name'] == request.form['new-tag']:
-                        return redirect(url_for('display_post', question_id=question_id))
+                        return render_template('adding_tag.html', tags=tags,  question_id=question_id)
 
                 data_handler.add_new_tag(request.form['new-tag'])
                 new_tag_id = data_handler.max_tag_id()
