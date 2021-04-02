@@ -330,6 +330,7 @@ def delete_comment(comment_id):
 
 @app.route("/question/<int:question_id>/new-tag", methods=["GET","POST"])
 def add_question_tag(question_id):
+
     try:
         tags = data_handler.get_tags()
         if request.method == 'POST':
