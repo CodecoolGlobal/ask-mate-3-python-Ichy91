@@ -319,13 +319,22 @@ def edit_comment(comment_id):
 @app.route("/comments/<int:comment_id>/delete")
 def delete_comment(comment_id):
 
-    data_handler.delete_comment_id(comment_id)
 
     questions = data_handler.get_all_user_story()
     answers = data_handler.get_all_user_answer()
+    comments = data_handler.list_all_comments()
 
-    return redirect(url_for("main_page"))
-    #return redirect(url_for("display_post", question_id=question_id))
+    for comment in comments:
+        for question in questions:
+            if question["id"] == comment["question_id"]:
+                question_id = question["id"]
+        for answer in answers:
+            if answer["id"] == comment["answer_id"]:
+                question_id = answer["question_id"]
+
+
+    data_handler.delete_comment_id(comment_id)
+    return redirect(url_for("display_post", question_id=question_id))
 
 
 @app.route("/question/<int:question_id>/new-tag", methods=["GET","POST"])

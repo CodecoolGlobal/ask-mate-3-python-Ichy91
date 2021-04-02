@@ -41,11 +41,11 @@
 
                           <a href="/question/{{ question.id }}" id="question-message-link">
                               <br>{{ question.message | replace(phrase, replaced) }}</a>
-                        <br><br><br>
+                        <br><br>
 
                         {% if question.image %}
                          <img src="static/{{ question.image }}" alt="{{ question.image }}" id="question-image">
-                          <br><br><br>
+                          <br><br>
                         {% endif %}
 
                         {% for answer in answers %}

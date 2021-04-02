@@ -4,118 +4,123 @@
    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/display_question.css')}}">
 {% endblock %}
 
+{% block header %}
+    <div class="topnav">
+
+        <a href="/question/{{ question_id }}/delete" style="float:right">Delete the question</a>
+        <a href="/question/{{ question_id }}/edit" style="float:right">Edit the question</a>
+        <a href="/question/{{ question_id }}/new-comment" style="float:right">Add comment</a>
+        <a href="/question/{{ question_id }}/new-tag" style="float:right">Add new tag</a>
+
+        <a href="/" class="btn btn-secondary" id="nav-hrefs">Main Page</a>
+    </div>
+{% endblock %}
+
 {% block content %}
+    <main>
+        <section>
 
-
-    {% for question in questions %}
-        {% if question_id == question.id %}
-            <div>
-            <center>
-                <p class="question-title-section">⇅{{ question.vote_number }}
-                    <strong>
-                        {{ question.title }}
+        {% for question in questions %}
+            {% if question_id == question.id %}
+                <br>
+                    <a href="/question/{{ question_id }}/vote_up" id="question-up-vote" class="btn btn-success">⬆</a><br><br>
+                    <a href="/question/{{ question.id }}/vote_down" id="question-down-vote" class="btn btn-danger">⬇</a>
+                    <h2>
+                        <strong>{{ question.title }}</strong>
                         {% for tag in tags %}
                             {% for question_tag in questions_tags %}
                                 {% if question_id == question_tag.question_id and tag.id == question_tag.tag_id %}
-                                    [{{ tag.name }}]
-                                    <a href="/question/{{ question_id }}/tag/{{ tag.id }}/delete"
-                                       id="answer-delete">X</a>
+                                    <span style="font-size:20px">
+                                        <a href="/question/{{ question_id }}/tag/{{ tag.id }}/delete" style="color: red">X</a>
+                                        [{{ tag.name }}]</span>
                                 {% endif %}
                             {% endfor %}
                         {% endfor %}
-                    </strong>
-                    <small id="question-submission_time"><br>Written on: {{ question.submission_time }}</small>
-                </p>
-                <p id="question-message">{{ question.message }}</p>
-                {% if question.image %}
-                    <img src="{{ url_for('static', filename=question.image )}}" alt="{{ question.image }}"
-                         id="question-image"><br><br>
-                {% endif %}
-                <a href="/question/{{ question_id }}/vote_up" id="question-up-vote" class="btn btn-success">Up vote</a>
-                <a href="/question/{{ question.id }}/vote_down" id="question-down-vote" class="btn btn-danger">Down vote</a>
-            </center>
-            <br>
+                    </h2>
 
-            <strong>Comment(s) for the question:</strong>
-            {% for comment in question_comment %}
-                {% if question_id == comment.question_id %}
-                <div id="question-comments">
-                    <small id="question-submission_time"><br>Edited: {{ comment.edited_count }}
-                        <br>Written on: {{ comment.submission_time }}</small><br>
+                    <small id="question-small-tag">{{ question.submission_time }} | ⇅{{ question.vote_number }}</small>
+                    <br><br>
+
+                    <p id="question-message">{{ question.message }}</p>
+                    {% if question.image %}
+                        <br>
+                        <img src="{{ url_for('static', filename=question.image )}}" alt="{{ question.image }}"
+                             id="question-image"><br><br>
+                    {% endif %}
                     <br>
-                    <a href="/comments/{{ comment.id }}/delete" id="answer-delete">X</a>
-                    {{ comment.message }}<br><br>
-                    <a href="/comment/{{ comment.id }}/edit" id="question-down-vote" class="btn btn-primary">Edit</a>
-                <hr>
-                </div>
-                {% endif %}
-            {% endfor %}
 
-        {% endif %}
-    {% endfor %}
+                    <p id="comment-title">Comment(s) for the question:</p>
+                    {% for comment in question_comment %}
+                        {% if question_id == comment.question_id %}
+                            <article>
+                                <div class="question-comments">
+                                    <small id="question-small-tag">{{ comment.submission_time }} | Edited: {{ comment.edited_count }}</small>
+                                    <p>{{ comment.message }}</p>
+                                    <a href="/comment/{{ comment.id }}/edit" id="comment-edit" class="btn btn-primary">Edit comment</a>
+                                    <a href="/comments/{{ comment.id }}/delete" id="answer-delete" class="btn btn-danger">Delete comment</a>
+                                    <br><br>
+                                </div>
+                            </article>
+                        {% endif %}
+                    {% endfor %}
 
-    <hr>
-    {% for question in questions %}
-        {% if question_id == question.id %}
-    <center>
-        <p class="add-comment-section">If you want to ask something just click down below!<br><br>
-        <a href="/question/{{ question.id }}/new-answer">Write an answer</a></p>
-    </center>
-        {% endif %}
-    {% endfor %}
-
-    <hr><hr>
-    {% for answer in answers %}
-        {% if question_id == answer.question_id %}
-            <small>Written on: {{ answer.submission_time }}</small>
-            <small id="answer-vote-number">Vote(s):<br>⇅ {{ answer.vote_number }}</small><br>
-            <a href="/answer/{{ answer.id }}/delete" id="answer-delete">X</a>
-                {{ answer.message.capitalize() }}
-            <br>
-            {% if answer.image %}
-                <br>
-                <img src="{{ url_for('static', filename=answer.image )}}" alt="{{ answer.image }}" id="answer-image">
-                <br>
-            {% endif %}
-            <br>
-            <a href="/answer/{{ answer.id }}/edit" id="question-down-vote" class="btn btn-primary">Edit</a>
-            <a href="/answer/{{ answer.id }}/new-comment" id="answer-vote-down" class="btn btn-info">Add comment</a>
-            <a href="/answer/{{ answer.id }}/vote_up" id="answer-vote-up" class="btn btn-success">
-                Up vote</a>
-            <a href="/answer/{{ answer.id }}/vote_down" id="answer-vote-down" class="btn btn-danger">
-                Down vote</a>
-            <br>
-            <br><strong>Comment(s) for the answer:</strong>
-            {% for comment in comments %}
-                {% if answer.id == comment.answer_id %}
-
-                <div id="answer-comments">
-                    <small id="question-submission_time"><br>Edited: {{ comment.edited_count }}
-                        <br>Written on: {{ comment.submission_time }}
-                     </small><br>
-                    <br><a href="/comments/{{ comment.id }}/delete" id="answer-delete">X</a>
-                        {{ comment.message }}<br><br>
-                    <a href="/comment/{{ comment.id }}/edit" id="question-down-vote" class="btn btn-primary">Edit</a>
-                    <hr>
-                </div>
-                {% endif %}
-            {% endfor %}
-        <hr>
-        {% endif %}
-    {% endfor %}
-
-    <br>
-        {% for question in questions %}
-            {% if question_id == question.id %}
-                <center>
-                <a href="/question/{{ question.id }}/new-tag" class="btn btn-warning" id="edit-question">Add new tag</a>
-                <a href="/question/{{ question.id }}/new-comment" class="btn btn-info" id="edit-question">Add comment</a>
-                <a href="/question/{{ question.id }}/edit" id="edit-question" class="btn btn-primary">Edit the question</a>
-                <a href="/question/{{ question_id }}/delete" id="edit-question" class="btn btn-danger">Delete the question</a>
-
+                <hr><hr>
             {% endif %}
         {% endfor %}
-                <a href="/" id="edit-question" class="btn btn-secondary">Main Page</a>
-                </center>
-            <br><br>
+
+        </section>
+
+        <section>
+
+            <center>
+                <p id="add-comment-section">If you want to ask something just click down below!<br><br>
+                <a href="/question/{{ question_id }}/new-answer">Write an answer</a></p>
+            </center>
+
+        </section>
+
+        <section>
+            <hr><hr>
+            {% for answer in answers %}
+                {% if question_id == answer.question_id %}
+                    <article>
+                        <small id="question-small-tag">{{ answer.submission_time }} | ⇅ {{ answer.vote_number }}</small>
+                        <a href="/answer/{{ answer.id }}/vote_up"
+                           id="answer-vote-up" class="btn btn-success">⬆</a><br><br>
+                        <a href="/answer/{{ answer.id }}/vote_down"
+                           id="answer-vote-down" class="btn btn-danger">⬇</a>
+                        <p id="answer-title">{{ answer.message }}</p>
+
+                        {% if answer.image %}
+                            <br>
+                            <img src="{{ url_for('static', filename=answer.image )}}" alt="{{ answer.image }}" id="answer-image">
+                            <br>
+                        {% endif %}
+                        <br>
+                        <a href="/answer/{{ answer.id }}/edit" id="answer-buttons" class="btn btn-primary">Edit answer</a>
+                        <a href="/answer/{{ answer.id }}/new-comment" id="answer-buttons" class="btn btn-info">Add comment</a>
+                        <a href="/answer/{{ answer.id }}/delete" id="answer-buttons" class="btn btn-danger">Delete answer</a>
+
+                        <br><br>
+                        <p id="comment-title">Comment(s) for the answer:</p>
+                            {% for comment in comments %}
+                                {% if answer.id == comment.answer_id %}
+                                <div class="answer-comments">
+                                    <small id="question-small-tag"><br>{{ comment.submission_time }} | Edited: {{ comment.edited_count }}
+                                     </small>
+                                    <br>
+                                    <p>{{ comment.message }}</p>
+                                    <a href="/comment/{{ comment.id }}/edit" id="comment-edit" class="btn btn-primary">Edit comment</a>
+                                    <a href="/comments/{{ comment.id }}/delete" id="answer-delete" class="btn btn-danger">Delete comment</a>
+                                </div>
+
+                                {% endif %}
+                            {% endfor %}
+                        <br><hr>
+                    </article>
+                {% endif %}
+            {% endfor %}
+
+        </section>
+    </main>
 {% endblock %}
