@@ -1,8 +1,4 @@
-#Implement sorting for the question list.
-#The question list can be sorted by title, submission time, message, number of views, and number of votes
-#You can choose the direction: ascending or descending
-#The order is passed as query string parameters, for example /list?order_by=title&order_direction=desc
-
+import bcrypt
 from flask import Flask, render_template, redirect, request, url_for
 from werkzeug.utils import secure_filename
 import os
@@ -24,3 +20,12 @@ def upload_file(my_request, picture_id, QandA):
         return filepath
 
 
+def hash_password(plain_text_password):
+    # By using bcrypt, the salt is saved into the hash itself
+    hashed_bytes = bcrypt.hashpw(plain_text_password.encode('utf-8'), bcrypt.gensalt())
+    return hashed_bytes.decode('utf-8')
+
+
+def verify_password(plain_text_password, hashed_password):
+    hashed_bytes_password = hashed_password.encode('utf-8')
+    return bcrypt.checkpw(plain_text_password.encode('utf-8'), hashed_bytes_password)

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, request, url_for
+from flask import Flask, render_template, redirect, request, url_for, session
 import data_handler, util
 import datetime
 #from werkzeug.utils import secure_filename
@@ -27,6 +27,11 @@ def list_all_questions():
         questions = data_handler.get_all_user_story()
 
     return render_template("list.html", questions=questions, title="All questions")
+
+
+@app.route("/login", methods=['GET', 'POST'])
+def login():
+    return render_template('login.html', title="Login")
 
 
 @app.route("/question/<int:question_id>")
