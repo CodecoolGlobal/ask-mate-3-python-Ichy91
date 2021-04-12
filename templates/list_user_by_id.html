@@ -55,34 +55,42 @@
     </tbody>
     </table>
 
+    <br><br>
     <div class="questions_for_user">
+    <h3>Question(s):</h3>
         {% for question in questions %}
             {% if user_id == question.user_id %}
                 <p>
-                {{ question.title }}<br>
-                {{ question.message }}
+                <h5>{{ question.title }}</h5><br>
+                    <a href="/question/{{ question_id }}" id="user_id">{{ question.message }}</a>
+                <hr>
                 </p>
             {% endif %}
         {% endfor %}
     </div>
 
+    <br>
     <div class="answer_for_user">
-        {% for question in questions %}
-            {% if user_id == question.user_id %}
+    <h3>Answer(s):</h3>
+        {% for answer in answers %}
+            {% if user_id == answer.user_id %}
                 <p>
-                {{ question.title }}<br>
-                {{ question.message }}
+                <h5>{{ answer.title }}</h5><br>
+                    <a href="/question/{{ question_id }}" id="user_id">{{ answer.message }}</a>
+                <hr>
                 </p>
             {% endif %}
         {% endfor %}
     </div>
 
+    <br>
     <div class="comment_for_user">
-        {% for question in questions %}
-            {% if user_id == question.user_id %}
+    <h3>Comments(s):</h3>
+        {% for comment in comments %}
+            {% if user_id == comment.user_id %}
                 <p>
-                {{ question.title }}<br>
-                {{ question.message }}
+                    <a href="/question/{{ question_id }}" id="user_id">{{ question.message }}</a>
+                <hr>
                 </p>
             {% endif %}
         {% endfor %}
