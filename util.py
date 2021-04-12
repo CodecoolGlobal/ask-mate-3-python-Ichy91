@@ -6,6 +6,7 @@
 from flask import Flask, render_template, redirect, request, url_for
 from werkzeug.utils import secure_filename
 import os
+import bcrypt
 
 app = Flask(__name__)
 
@@ -24,3 +25,11 @@ def upload_file(my_request, picture_id, QandA):
         return filepath
 
 
+def hash_password(plain_text_password):
+    hashed_bytes = bcrypt.hashpw(plain_text_password.encode('utf-8'), bcrypt.gensalt())
+    return hashed_bytes
+
+
+def verify_password(plain_text_password, hashed_password):
+    hashed_bytes_password = hashed_password.encode('utf-8')
+    return bcrypt.checkpw(plain_text_password.encode('utf-8'), hashed_bytes_password)
