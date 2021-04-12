@@ -1,0 +1,12 @@
+body {
+    font-family: system-ui;
+    background: white;
+}
+
+a {
+    text-decoration: none;
+}
+
+hr {
+    background-color:salmon;
+}

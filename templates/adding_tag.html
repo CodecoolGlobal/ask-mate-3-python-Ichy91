@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block head %}
+   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/update.css')}}">
+{% endblock %}
+
+{% block content %}
+
+    <main>
+        <section>
+
+            <center>
+                <form action="/question/{{ question_id }}/new-tag" method="POST">
+                    <label for="new-tag" id="label-title">Add tag for your question</label><br><br>
+                    <input name="new-tag" placeholder="Add new tag.."><br><br>
+                    <button type="submit" id="submit" class="btn btn-info">Add new tag</button><br><br>
+                </form>
+
+                <br>
+
+                <form action="/question/{{ question_id }}/new-tag" method="POST">
+                    <label for="'existing-tags" id="label-title">Choose from existing tags</label>
+                    <select name="existing-tags">
+                        {% for tag in tags %}
+                            <option value="{{ tag.name }}">{{ tag.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <br><br>
+                    <button type="submit" id="submit" class="btn btn-primary">Add existing tag to question</button>
+                </form>
+            </center>
+
+            <br><br><a href="/question/{{ question_id }}" class="btn btn-info" id="back-to-posts">Back to post</a>
+
+        </section>
+    </main>
+{% endblock %}

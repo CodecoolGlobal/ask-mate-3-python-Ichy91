@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block head %}
+   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/list.css')}}">
+{% endblock %}
+
+    {% block header %}
+
+    <div class="topnav">
+        <a href="/" id="nav-hrefs" class="btn-secondary">Latest questions</a>
+        <div class="search-container">
+            <form action="/search">
+                <input type="text" name="phrase" placeholder="Search for phrase..">
+                <button type="submit">🔎</button>
+            </form>
+        </div>
+    </div>
+    <br>
+
+        <center>
+            <h1>Welcome on the Askers forum!</h1>
+            <p style="font-size: 17px">Enjoy your stay!</p>
+            <a id="nav-hrefs" href="/add-question" class="btn btn-danger">Ask here</a>
+        </center>
+        <br><hr>
+        <br>
+
+    {% endblock %}
+
+{% block content %}
+    <main>
+        <form action="/list">
+            <label for="column-name">Filter by column:</label>
+            <select name="column-name">
+                <option value="title">Title</option>
+                <option value="submission_time">Submission time</option>
+                <option value="message">Message</option>
+                <option value="view_number">Number of views</option>
+                <option value="vote_number">Number of votes</option>
+            </select>
+
+            <br><label for="order_direction">Order by:</label>
+            <select name="order_direction">
+                <option value="DESC">Descending</option>
+                <option value="ASC">Ascending</option>
+            </select>
+            <button type="submit" class="btn-primary">Sorting</button>
+        </form>
+    <br>
+
+    <section>
+        {% for question in questions %}
+
+            <article>
+                  <small id="question-views">{{ question.view_number }} views</small>
+                  <h2><strong>{{ question.title }}</strong></h2>
+                  <small id="question-small-tag">{{ question.submission_time }} | ⇅{{ question.vote_number }}</small>
+                  <br>
+
+                  <a href="/question/{{ question.id }}" id="question-message-link">
+                  <br>{{ question.message }}</a>
+                  <br><br><br>
+
+
+                  {% if question.image %}
+                     <img src="static/{{ question.image }}" alt="{{ question.image }}" id="question-image">
+                      <br><br>
+                  {% endif %}
+                <br>
+
+            </article>
+
+        {% endfor %}
+        </section>
+
+    </main>
+{% endblock %}

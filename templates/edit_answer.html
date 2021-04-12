@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block head %}
+   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/post_answer.css')}}">
+{% endblock %}
+
+
+{% block content %}
+
+    <main>
+        <section>
+
+            {% for answer in answers %}
+                {% if answer_id == answer.id %}
+                    <form action="/answer/{{ answer.id }}/edit" method="POST">
+
+                        <div class="form-group">
+                            <label for="answer" id="label-comment">Your answer</label><br>
+                            <textarea class="form-control" id="answer" minlength ="5" name="updated-answer" required>{{ answer.message }}</textarea><br>
+                        </div>
+
+                     <h4>Upload a picture</h4><br>
+                     <div class="container">
+                        <div class="input-group">
+                          <div class="custom-file">
+                            <input type="file" class="custom-file-input" id="customFileInput" name="image" aria-describedby="customFileInput">
+                            <label class="custom-file-label" for="customFileInput">Select file</label>
+                          </div>
+                        </div>
+                      </div>
+                        <br><br>
+
+                    <center><button type="submit" class="btn-primary" id="submit">Edit your answer</button></center>
+                    </form>
+
+                    <br><br><a href="/question/{{ answer.question_id }}" class="btn btn-info" id="back-to-posts">Back to post</a>
+
+                 <script>
+                    document.querySelector('.custom-file-input').addEventListener('change', function (e) {
+                      var name = document.getElementById("customFileInput").files[0].name;
+                      var nextSibling = e.target.nextElementSibling
+                      nextSibling.innerText = name
+                    })
+                </script>
+
+                {% endif %}
+            {% endfor %}
+
+        </section>
+    </main>
+
+{% endblock %}
