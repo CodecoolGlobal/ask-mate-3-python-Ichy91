@@ -8,7 +8,11 @@
 
     <div class="topnav">
         <a href="/" id="nav-hrefs" class="btn-secondary">Latest questions</a>
-        <a href="/login" id="nav-hrefs" class="btn-secondary">Login</a>
+        {% if login %}
+            <a href="/logout" id="nav-hrefs" class="btn-secondary">Logout</a> {# maybe login/register panel #}
+        {% else %}
+                <a href="/login" id="nav-hrefs" class="btn-secondary">Login</a> {# maybe login/register panel #}
+        {% endif %}
         <div class="search-container">
             <form action="/search">
                 <input type="text" name="phrase" placeholder="Search for phrase..">

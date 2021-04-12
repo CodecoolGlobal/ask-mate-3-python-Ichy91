@@ -340,6 +340,7 @@ def get_id_to_tag(cursor: RealDictCursor, name: str) -> list:
     cursor.execute(query, [name])
     return cursor.fetchall()
 
+
 @database_common.connection_handler
 def delete_tag_before_delete_question(cursor: RealDictCursor, question_id) -> list:
     query = """
@@ -347,3 +348,13 @@ def delete_tag_before_delete_question(cursor: RealDictCursor, question_id) -> li
     WHERE question_id = %s
     """
     cursor.execute(query, [question_id])
+
+
+@database_common.connection_handler
+def get_data_by_username(cursor: RealDictCursor, username: str) -> list:
+    query = """
+        SELECT * FROM users
+        WHERE name = %s
+    """
+    cursor.execute(query, (username, ))
+    return cursor.fetchall()
