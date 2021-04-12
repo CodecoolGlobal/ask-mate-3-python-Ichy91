@@ -56,7 +56,6 @@ def add_question():
         title = request.form["title"]
         message = request.form["message"]
         time = now_time.strftime("%Y/%m/%d %H:%M:%S")
-
         user_id = data_handler.get_user_id(session['username'])['id']
 
         if request.form["image"] == "":
@@ -94,13 +93,14 @@ def post_answer(question_id):
     if request.method == "POST":
         answer = request.form["answer"]
         time = now_time.strftime("%Y/%m/%d %H:%M:%S")
+        user_id = data_handler.get_user_id(session['username'])['id']
 
         if request.form["image"] == "":
             image = ""
         else:
             image = "images/" + request.form["image"]
 
-        data_handler.add_new_answer(time, question_id, answer, image)
+        data_handler.add_new_answer(time, question_id, answer, image, user_id)
 
         return redirect(url_for("display_post", question_id=question_id))
 
