@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, request, url_for
+from flask import Flask, session ,render_template, redirect, request, url_for
 import data_handler, util
 import datetime
 #from werkzeug.utils import secure_filename
@@ -57,13 +57,15 @@ def add_question():
         message = request.form["message"]
         time = now_time.strftime("%Y/%m/%d %H:%M:%S")
 
+        user_id = data_handler.get_user_id(session['username'])['id']
+
         if request.form["image"] == "":
             image = ""
         else:
             image = "images/" + request.form["image"]
 
 
-        data_handler.add_new_question(time, title, message, image)
+        data_handler.add_new_question(time, title, message, image, user_id)
 
         return redirect(url_for("main_page"))
 

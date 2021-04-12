@@ -27,12 +27,12 @@ def get_five_latest_user_stories(cursor: RealDictCursor) -> list:
 
 
 @database_common.connection_handler
-def add_new_question(cursor: RealDictCursor, time, title, message, image) -> list:
+def add_new_question(cursor: RealDictCursor, time, title, message, image, user_id) -> list:
     query = """
     INSERT INTO question (submission_time, view_number, vote_number, title, message, image)
-    VALUES(%s, 0, 0, %s, %s, %s)
+    VALUES(%s, 0, 0, %s, %s, %s, %s)
         """
-    cursor.execute(query, [time, title, message, image])
+    cursor.execute(query, [time, title, message, image, user_id])
 
 
 @database_common.connection_handler
@@ -347,3 +347,13 @@ def delete_tag_before_delete_question(cursor: RealDictCursor, question_id) -> li
     WHERE question_id = %s
     """
     cursor.execute(query, [question_id])
+
+
+@database_common.connection_handler
+def get_user_id(cursor: RealDictCursor, username) -> list:
+    query = """
+    SELECT * FROM users
+    WHERE name = %s
+    """
+    cursor.execute(query, [username])
+    return cursor.fetchall()
