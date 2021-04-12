@@ -362,17 +362,15 @@ def list_users(cursor: RealDictCursor) -> list:
 @database_common.connection_handler
 def count_user_activity(cursor: RealDictCursor) -> list:
     query = """
-    SELECT users.id, COUNT(question.user_id) AS asked_question
+    SELECT users.id, COUNT(question.user_id) AS asked_question, 
+    COUNT(answer.user_id) AS answered, COUNT(comment.user_id) as commented
     FROM users
-    JOIN question ON question.user_id = users.id
-    WHERE users.id = question.user_id
+    LEFT JOIN question ON question.user_id = users.id
+    LEFT JOIN answer ON answer.user_id = users.id
+    LEFT JOIN comment ON comment.user_id = users.id
+    WHERE users.id = question.user_id OR users.id = answer.user_id OR users.id = comment.user_id
     GROUP BY users.id
     """
-    # COUNT(answer_user_id)
-    # COUNT(comment_user_id)
-    # JOIN answer ON answer.user_id = users.id
-    # JOIN comment ON comment.user_id = users.id
-    # WHERE users.id = answer.user_id
-    # WHERE users.id = comment_user_id
+
     cursor.execute(query)
     return cursor.fetchall()
