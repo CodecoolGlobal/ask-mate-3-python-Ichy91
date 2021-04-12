@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, request, url_for
+from flask import Flask, render_template, redirect, request, url_for, session
 import data_handler, util
 import datetime
 #from werkzeug.utils import secure_filename
@@ -370,6 +370,28 @@ def delete_tag(question_id,tag_id):
     data_handler.delete_tags(question_id, tag_id)
 
     return redirect(url_for("display_post", question_id=question_id))
+
+
+@app.route("/users")
+def list_users():
+    #if session:
+    list_user = data_handler.list_users()
+    count_activity = data_handler.count_user_activity()
+
+    return render_template('list_users.html', list_users=list_user, count_activity=count_activity)
+    #return redirect(url_for('main_page'))
+
+
+@app.route("/user/<int:user_id>")
+def get_user_data_by_id(user_id):
+    comments = data_handler.list_all_comments()
+    questions = data_handler.get_all_user_story()
+    answers = data_handler.get_all_user_answer()
+    list_user = data_handler.list_users()
+    count_activity = data_handler.count_user_activity()
+
+    return render_template('list_user_by_data.html', list_users=list_user, count_activity=count_activity,
+                           questions=questions, comments=comments, answers=answers, user_id=user_id)
 
 
 if __name__ == '__main__':

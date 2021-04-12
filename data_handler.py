@@ -347,3 +347,32 @@ def delete_tag_before_delete_question(cursor: RealDictCursor, question_id) -> li
     WHERE question_id = %s
     """
     cursor.execute(query, [question_id])
+
+
+@database_common.connection_handler
+def list_users(cursor: RealDictCursor) -> list:
+    query = """
+    SELECT *
+    FROM users
+    """
+    cursor.execute(query)
+    return cursor.fetchall()
+
+
+@database_common.connection_handler
+def count_user_activity(cursor: RealDictCursor) -> list:
+    query = """
+    SELECT users.id, COUNT(question.user_id) AS asked_question
+    FROM users
+    JOIN question ON question.user_id = users.id
+    WHERE users.id = question.user_id
+    GROUP BY users.id
+    """
+    # COUNT(answer_user_id)
+    # COUNT(comment_user_id)
+    # JOIN answer ON answer.user_id = users.id
+    # JOIN comment ON comment.user_id = users.id
+    # WHERE users.id = answer.user_id
+    # WHERE users.id = comment_user_id
+    cursor.execute(query)
+    return cursor.fetchall()

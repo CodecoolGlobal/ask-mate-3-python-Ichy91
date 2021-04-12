@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block head %}
+   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/list.css')}}">
+{% endblock %}
+
+{% block header %}
+
+    <div class="topnav">
+        <a href="/" id="nav-hrefs" class="btn-secondary">Main page</a>
+    </div>
+    <br>
+
+    <center>
+    <div>
+        <h1>Information about the registered users</h1>
+    </div>
+    </center>
+    <br><br>
+{% endblock %}
+
+{% block content %}
+
+    <table border="1" width="100%" style="text-align:center; font-size: 18px">
+    <thead>
+
+    <tr>
+        <td>Id</td>
+        <td>Name</td>
+        <td>Create date</td>
+        <td>Asked question</td>
+        <td>Answers</td>
+        <td>Comments</td>
+        <td>Reputation</td>
+    </tr>
+    </thead>
+
+    <tbody>
+    {% for user in list_users %}
+        {% for count in count_activity %}
+            {% if user_id == user.id %}
+    <tr>
+                <th>{{ user.id }}</th>
+                <th>{{ user.name }}</th>
+                <th>{{ user.created_date }}</th>
+                <th>{{ count.asked_question  }}</th>
+                <th>0</th>
+                <th>0</th>
+                <th>0</th>
+
+            {% endif %}
+        {% endfor %}
+    {% endfor %}
+    </tr>
+    </tbody>
+    </table>
+
+    <div class="questions_for_user">
+        {% for question in questions %}
+            {% if user_id == question.user_id %}
+                <p>
+                {{ question.title }}<br>
+                {{ question.message }}
+                </p>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+    <div class="answer_for_user">
+        {% for question in questions %}
+            {% if user_id == question.user_id %}
+                <p>
+                {{ question.title }}<br>
+                {{ question.message }}
+                </p>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+    <div class="comment_for_user">
+        {% for question in questions %}
+            {% if user_id == question.user_id %}
+                <p>
+                {{ question.title }}<br>
+                {{ question.message }}
+                </p>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+
+{% endblock %}
