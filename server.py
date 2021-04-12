@@ -427,6 +427,13 @@ def delete_comment(comment_id):
         return redirect(url_for('main_page'))
 
 
+@app.route("/tags")
+def list_tags():
+    tags_and_occurence = data_handler.tags_and_occurence()
+
+    return render_template('display_tags.html', tags=tags_and_occurence)
+
+
 @app.route("/question/<int:question_id>/new-tag", methods=["GET","POST"])
 def add_question_tag(question_id):
     global logged_in

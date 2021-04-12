@@ -358,3 +358,14 @@ def get_data_by_username(cursor: RealDictCursor, username: str) -> list:
     """
     cursor.execute(query, (username, ))
     return cursor.fetchall()
+
+
+@database_common.connection_handler
+def tags_and_occurence(cursor: RealDictCursor) -> list:
+    query = """
+        SELECT name, COUNT(name) AS occurence
+        FROM tag
+        GROUP BY name
+    """
+    cursor.execute(query)
+    return cursor.fetchall()
