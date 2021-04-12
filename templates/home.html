@@ -29,10 +29,8 @@
     {% endblock %}
 
 {% block content %}
-    <main>
-        {% if session %} {# session['name'] ? #}
+    <main>{# session['name'] ? #}
         <a href="/users">Users details</a><br><br>
-        {% endif %}
 
         <form action="/list">
             <label for="column-name">Filter by column:</label>
