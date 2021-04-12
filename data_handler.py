@@ -355,12 +355,13 @@ def get_users(cursor: RealDictCursor) -> list:
     SELECT name FROM users
     """
     cursor.execute(query)
+    return cursor.fetchall()
 
 
 @database_common.connection_handler
-def add_new_user(cursor: RealDictCursor, username, hashed_password) -> list:
+def add_new_user(cursor: RealDictCursor, username, hashed_password, date) -> list:
     query = """
-    INSERT INTO users(name, password)
-    VALUES (%s, %s)
+    INSERT INTO users(name, password, created_date)
+    VALUES (%s, %s, %s)
     """
-    cursor.execute(query, [username, hashed_password])
+    cursor.execute(query, [username, hashed_password, date])

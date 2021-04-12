@@ -377,11 +377,16 @@ def delete_tag(question_id,tag_id):
 def register():
     if request.method == 'POST':
         if request.form['password1'] == request.form['password2']:
-            username = request.form['password1']
+            username = request.form['username']
             password = util.hash_password(request.form['password1'])
             usernames = data_handler.get_users()
-            if username not in usernames:
-                data_handler.add_new_user(username, password)
+            date = now_time.strftime("%Y-%m-%d %H:%M:%S")
+            unique = True
+            for user_name in usernames:
+                if user_name['name'] == username:
+                    unique = False
+            if unique:
+                data_handler.add_new_user(username, password, date)
                 return redirect(url_for('main_page'))
             return render_template('register_page.html', error_message = "ERROR: Username already in use!")
         return render_template('register_page.html', error_message = "ERROR: Passwords do not match!")
