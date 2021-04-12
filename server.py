@@ -1,6 +1,7 @@
 from flask import Flask, render_template, redirect, request, url_for
 import data_handler, util
 import datetime
+import util
 #from werkzeug.utils import secure_filename
 
 now_time = datetime.datetime.now()
@@ -371,6 +372,20 @@ def delete_tag(question_id,tag_id):
 
     return redirect(url_for("display_post", question_id=question_id))
 
+
+@app.route("/registration", methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        if request.form['password1'] == request.form['password2']:
+            username = request.form['password1']
+            password = util.hash_password(request.form['reg_password'])
+            usernames = data_handler.get_users()
+            if username not in usernames:
+                data_handler.add_new_user(username, password)
+                return redirect(url_for('main_page'))
+            return render_template('register_page.html', error_message = "ERROR: Username already in use!")
+        return render_template('register_page.html', error_message = "ERROR: Passwords do not match!")
+    return render_template('register_page.html', error_message = "")
 
 if __name__ == '__main__':
     app.run(
