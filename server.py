@@ -378,7 +378,7 @@ def register():
     if request.method == 'POST':
         if request.form['password1'] == request.form['password2']:
             username = request.form['password1']
-            password = util.hash_password(request.form['reg_password'])
+            password = util.hash_password(request.form['password1'])
             usernames = data_handler.get_users()
             if username not in usernames:
                 data_handler.add_new_user(username, password)
