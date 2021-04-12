@@ -5,12 +5,12 @@
 
 {% block content %}
     <main>
-        <form method="post">
+        <form method="post" id="login_form">
             <label for="username">Username(email): </label>
             <input type="text" name="username" id="username">
             <label for="password">Password: </label>
-            <input type="password" name="password" id="password">
-            <button type="submit">Login</button>
+            <input type="password" name="password" id="password"><br>
+            <button type="submit" id="nav-hrefs" class="btn-danger">Login</button>
         </form>
         {{ error }}
 
