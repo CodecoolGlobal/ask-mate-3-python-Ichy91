@@ -29,7 +29,7 @@ def get_five_latest_user_stories(cursor: RealDictCursor) -> list:
 @database_common.connection_handler
 def add_new_question(cursor: RealDictCursor, time, title, message, image, user_id) -> list:
     query = """
-    INSERT INTO question (submission_time, view_number, vote_number, title, message, image)
+    INSERT INTO question (submission_time, view_number, vote_number, title, message, image, user_id)
     VALUES(%s, 0, 0, %s, %s, %s, %s)
         """
     cursor.execute(query, [time, title, message, image, user_id])
@@ -59,7 +59,7 @@ def get_all_user_answer(cursor: RealDictCursor) -> list:
 @database_common.connection_handler
 def add_new_answer(cursor: RealDictCursor, time, question_id, message, image, user_id) -> list:
     query = """
-    INSERT INTO answer(submission_time, vote_number, question_id, message, image)
+    INSERT INTO answer(submission_time, vote_number, question_id, message, image, user_id)
     VALUES (%s, 0, %s, %s, %s, %s)
     """
     cursor.execute(query, [time, question_id, message, image, user_id])
@@ -187,21 +187,21 @@ def get_search_result_questions_id_of_answers(cursor: RealDictCursor, phrase: st
 
 
 @database_common.connection_handler
-def add_comment_to_answer(cursor: RealDictCursor, answer_id, message, date) -> list:
+def add_comment_to_answer(cursor: RealDictCursor, answer_id, message, date, user_id) -> list:
     query = """
-    INSERT INTO comment (answer_id, message, submission_time, edited_count)
-    VALUES (%s, %s, %s, 0)
+    INSERT INTO comment (answer_id, message, submission_time, edited_count, user_id)
+    VALUES (%s, %s, %s, 0, %s)
     """
-    cursor.execute(query, [answer_id, message, date])
+    cursor.execute(query, [answer_id, message, date, user_id])
 
 
 @database_common.connection_handler
-def add_new_comment_to_question(cursor: RealDictCursor, question_id,  message: str, submission_time) -> list:
+def add_new_comment_to_question(cursor: RealDictCursor, question_id,  message, submission_time, user_id) -> list:
     query = """
-    INSERT INTO comment(question_id, message, submission_time, edited_count)
-    VALUES (%s, %s, %s, 0)
+    INSERT INTO comment(question_id, message, submission_time, edited_count, user_id)
+    VALUES (%s, %s, %s, 0, %s)
     """
-    cursor.execute(query, [question_id, message, submission_time])
+    cursor.execute(query, [question_id, message, submission_time, user_id])
 
 
 @database_common.connection_handler

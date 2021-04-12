@@ -72,24 +72,8 @@ def add_question():
         return render_template("add_question.html", title="Add question")
 
 
-@app.route("/question/<int:question_id>/new-comment", methods=["GET","POST"])
-def add_new_comment_to_question(question_id):
-    questions = data_handler.get_all_user_story()
-
-    if request.method == 'POST':
-        time = now_time.strftime("%Y/%m/%d %H:%M:%S")
-        message = request.form['new-comment']
-
-        data_handler.add_new_comment_to_question(question_id, message, time)
-
-        return redirect(url_for('display_post', question_id=question_id))
-
-    return render_template('add_comment_question.html', questions=questions, question_id=question_id)
-
-
 @app.route("/question/<int:question_id>/new-answer", methods=["GET","POST"])
 def post_answer(question_id):
-
     if request.method == "POST":
         answer = request.form["answer"]
         time = now_time.strftime("%Y/%m/%d %H:%M:%S")
@@ -108,6 +92,42 @@ def post_answer(question_id):
         questions = data_handler.get_all_user_story()
 
         return render_template("post_answer.html", title="Post comment", questions=questions, question_id=question_id)
+
+
+@app.route("/question/<int:question_id>/new-comment", methods=["GET","POST"])
+def add_new_comment_to_question(question_id):
+    questions = data_handler.get_all_user_story()
+
+    if request.method == 'POST':
+        time = now_time.strftime("%Y/%m/%d %H:%M:%S")
+        message = request.form['new-comment']
+        user_id = data_handler.get_user_id(session['username'])['id']
+
+        data_handler.add_new_comment_to_question(question_id, message, time, user_id)
+
+        return redirect(url_for('display_post', question_id=question_id))
+
+    return render_template('add_comment_question.html', questions=questions, question_id=question_id)
+
+
+@app.route("/answer/<int:answer_id>/new-comment", methods=["GET","POST"])
+def add_answer_comment(answer_id):
+    answers = data_handler.get_all_user_answer()
+    questions = data_handler.get_all_user_answer()
+
+    for index in range(len(answers)):
+        question_id = answers[index]["question_id"]
+
+    if request.method == "POST":
+        time = now_time.strftime("%Y/%m/%d %H:%M:%S")
+        message = request.form["new-comment"]
+        user_id = data_handler.get_user_id(session['username'])['id']
+
+        data_handler.add_comment_to_answer(answer_id, message, time, user_id)
+
+        return redirect(url_for("display_post", question_id=question_id))
+
+    return render_template("add_comment_answer.html", answers=answers, questions=questions, answer_id=answer_id)
 
 
 @app.route("/question/<int:question_id>/delete")
@@ -246,24 +266,6 @@ def search_phrase():
             right_ids.append(element['id'])
 
     return render_template('searched_questions.html', phrase=phrase, questions=questions, ids=right_ids, answers=answers)
-
-
-@app.route("/answer/<int:answer_id>/new-comment", methods=["GET","POST"])
-def add_answer_comment(answer_id):
-    answers = data_handler.get_all_user_answer()
-    questions = data_handler.get_all_user_answer()
-
-    for index in range(len(answers)):
-        question_id = answers[index]["question_id"]
-
-    if request.method == "POST":
-        time = now_time.strftime("%Y/%m/%d %H:%M:%S")
-        message = request.form["new-comment"]
-        data_handler.add_comment_to_answer(answer_id,message,time)
-
-        return redirect(url_for("display_post", question_id=question_id))
-
-    return render_template("add_comment_answer.html", answers=answers, questions=questions, answer_id=answer_id)
 
 
 @app.route("/answer/<int:answer_id>/edit", methods=["GET","POST"])
