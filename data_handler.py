@@ -373,7 +373,7 @@ def add_new_user(cursor: RealDictCursor, username, hashed_password, date) -> lis
 def count_user_activity(cursor: RealDictCursor) -> list:
     query = """
     SELECT users.id as id, users.name as name, users.created_date as created_date,
-    COUNT(question.user_id) AS asked_question, 
+    COUNT(question.user_id) AS asked_question, users.reputation as reputation,
     COUNT(answer.user_id) AS answered, COUNT(comment.user_id) as commented
     FROM users
     LEFT JOIN question ON question.user_id = users.id
@@ -405,3 +405,35 @@ def get_data_by_username(cursor: RealDictCursor, username: str) -> list:
     """
     cursor.execute(query, [username])
     return cursor.fetchall()
+
+
+@database_common.connection_handler
+def get_data_by_user_id(cursor: RealDictCursor, user_id: int) -> list:
+    query = """
+        SELECT * FROM users
+        WHERE id = %s
+    """
+    cursor.execute(query, [user_id, ])
+    return cursor.fetchall()
+
+
+@database_common.connection_handler
+def get_data_by_question_id(cursor: RealDictCursor, question_id: int) -> list:
+    query = """
+        SELECT * FROM question
+        WHERE id = %s
+    """
+    cursor.execute(query, [question_id])
+    return cursor.fetchall()
+
+
+@database_common.connection_handler
+def change_user_reputation(cursor: RealDictCursor, user_id: int, reputation: int) -> list:
+    query = """
+            UPDATE users
+            SET reputation = %s
+            WHERE id = %s
+        """
+    cursor.execute(query, [reputation, user_id])
+
+

@@ -71,7 +71,8 @@ CREATE TABLE users (
     id serial NOT NULL,
     name text,
     password text,
-    created_date timestamp without time zone
+    created_date timestamp without time zone,
+    reputation integer
 );
 
 
@@ -139,5 +140,3 @@ SELECT pg_catalog.setval('tag_id_seq', 3, true);
 INSERT INTO question_tag VALUES (1, 1);
 INSERT INTO question_tag VALUES (2, 3);
 INSERT INTO question_tag VALUES (3, 3);
-
-INSERT INTO users VALUES(1,'test','test','2021-04-12 13:36:11')
