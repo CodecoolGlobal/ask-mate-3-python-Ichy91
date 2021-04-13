@@ -35,7 +35,9 @@
     {% endblock %}
 
 {% block content %}
-    <main>
+    <main>{# session['name'] ? #}
+        <a href="/users">Users details</a><br><br>
+
         <form action="/list">
             <label for="column-name">Filter by column:</label>
             <select name="column-name">

@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block head %}
+   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/list.css')}}">
+{% endblock %}
+
+{% block header %}
+
+    <div class="topnav">
+        <a href="/" id="nav-hrefs" class="btn-secondary">Main page</a>
+    </div>
+    <br>
+
+    <center>
+    <div>
+        <h1>Information about the registered users</h1>
+    </div>
+    </center>
+    <br><br>
+{% endblock %}
+
+{% block content %}
+
+
+    <table border="1" width="100%" style="text-align:center; font-size: 18px">
+    <thead>
+
+    <tr>
+        <td>Id</td>
+        <td>Name</td>
+        <td>Create date</td>
+        <td>Asked question</td>
+        <td>Answers</td>
+        <td>Comments</td>
+        <td>Reputation</td>
+    </tr>
+    </thead>
+
+    <tbody>
+    {% for user in list_users %}
+        {% for count in count_activity %}
+    <tr>
+        <th><a href="/user/{{ user.id }}" id="user_id">{{ user.id }}</a></th>
+        <th>{{ user.name }}</th>
+        <th>{{ user.created_date }}</th>
+        <th>{{ count.asked_question  }}</th>
+        <th>0</th>
+        <th>0</th>
+        <th>0</th>
+            {% endfor %}
+        {% endfor %}
+    </tr>
+    </tbody>
+    </table>
+{% endblock %}

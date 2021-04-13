@@ -2,6 +2,11 @@
     font-size:17px;
 }
 
+#user_id {
+    color:black;
+    font-weight: 0;
+}
+
 #question-message-link {
     color:black;
     font-size: 19px;

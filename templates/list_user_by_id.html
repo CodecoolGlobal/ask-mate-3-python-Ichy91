@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block head %}
+   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/list.css')}}">
+{% endblock %}
+
+{% block header %}
+
+    <div class="topnav">
+        <a href="/" id="nav-hrefs" class="btn-secondary">Main page</a>
+    </div>
+    <br>
+
+    <center>
+    <div>
+        <h1>Information about user</h1>
+    </div>
+    </center>
+    <br><br>
+{% endblock %}
+
+{% block content %}
+
+    <table border="1" width="100%" style="text-align:center; font-size: 18px">
+    <thead>
+
+    <tr>
+        <td>Id</td>
+        <td>Name</td>
+        <td>Create date</td>
+        <td>Asked question</td>
+        <td>Answers</td>
+        <td>Comments</td>
+        <td>Reputation</td>
+    </tr>
+    </thead>
+
+    <tbody>
+    {% for user in list_users %}
+        {% for count in count_activity %}
+            {% if user_id == user.id %}
+    <tr>
+                <th>{{ user.id }}</th>
+                <th>{{ user.name }}</th>
+                <th>{{ user.created_date }}</th>
+                <th>{{ count.asked_question  }}</th>
+                <th>{{ count.answered }}</th>
+                <th>{{ count.commented }}</th>
+                <th>0</th>
+
+            {% endif %}
+        {% endfor %}
+    {% endfor %}
+    </tr>
+    </tbody>
+    </table>
+
+    <br><br>
+    <div class="questions_for_user">
+    <h3>Question(s):</h3>
+        {% for question in questions %}
+            {% if user_id == question.user_id %}
+                <p>
+                <h5>{{ question.title }}</h5><br>
+                    <a href="/question/{{ question_id }}" id="user_id">{{ question.message }}</a>
+                <hr>
+                </p>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+    <br>
+    <div class="answer_for_user">
+    <h3>Answer(s):</h3>
+        {% for answer in answers %}
+            {% if user_id == answer.user_id %}
+                <p>
+                <h5>{{ answer.title }}</h5><br>
+                    <a href="/question/{{ question_id }}" id="user_id">{{ answer.message }}</a>
+                <hr>
+                </p>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+    <br>
+    <div class="comment_for_user">
+    <h3>Comments(s):</h3>
+        {% for comment in comments %}
+            {% if user_id == comment.user_id %}
+                <p>
+                    <a href="/question/{{ question_id }}" id="user_id">{{ question.message }}</a>
+                <hr>
+                </p>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+
+{% endblock %}

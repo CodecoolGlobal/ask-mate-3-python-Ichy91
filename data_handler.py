@@ -339,7 +339,6 @@ def get_id_to_tag(cursor: RealDictCursor, name: str) -> list:
     cursor.execute(query, [name])
     return cursor.fetchall()
 
-
 @database_common.connection_handler
 def delete_tag_before_delete_question(cursor: RealDictCursor, question_id) -> list:
     query = """
@@ -386,3 +385,31 @@ def add_new_user(cursor: RealDictCursor, username, hashed_password, date) -> lis
     VALUES (%s, %s, %s)
     """
     cursor.execute(query, [username, hashed_password, date])
+
+
+
+@database_common.connection_handler
+def list_users(cursor: RealDictCursor) -> list:
+    query = """
+    SELECT *
+    FROM users
+    """
+    cursor.execute(query)
+    return cursor.fetchall()
+
+
+@database_common.connection_handler
+def count_user_activity(cursor: RealDictCursor) -> list:
+    query = """
+    SELECT users.id, COUNT(question.user_id) AS asked_question, 
+    COUNT(answer.user_id) AS answered, COUNT(comment.user_id) as commented
+    FROM users
+    LEFT JOIN question ON question.user_id = users.id
+    LEFT JOIN answer ON answer.user_id = users.id
+    LEFT JOIN comment ON comment.user_id = users.id
+    WHERE users.id = question.user_id OR users.id = answer.user_id OR users.id = comment.user_id
+    GROUP BY users.id
+    """
+
+    cursor.execute(query)
+    return cursor.fetchall()
