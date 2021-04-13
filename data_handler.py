@@ -1,7 +1,6 @@
 from psycopg2 import sql
 from psycopg2.extensions import AsIs
 from psycopg2.extras import RealDictCursor
-
 import database_common
 
 
@@ -340,6 +339,7 @@ def get_id_to_tag(cursor: RealDictCursor, name: str) -> list:
     cursor.execute(query, [name])
     return cursor.fetchall()
 
+
 @database_common.connection_handler
 def delete_tag_before_delete_question(cursor: RealDictCursor, question_id) -> list:
     query = """
@@ -347,3 +347,21 @@ def delete_tag_before_delete_question(cursor: RealDictCursor, question_id) -> li
     WHERE question_id = %s
     """
     cursor.execute(query, [question_id])
+
+
+@database_common.connection_handler
+def get_users(cursor: RealDictCursor) -> list:
+    query = """
+    SELECT name FROM users
+    """
+    cursor.execute(query)
+    return cursor.fetchall()
+
+
+@database_common.connection_handler
+def add_new_user(cursor: RealDictCursor, username, hashed_password, date) -> list:
+    query = """
+    INSERT INTO users(name, password, created_date)
+    VALUES (%s, %s, %s)
+    """
+    cursor.execute(query, [username, hashed_password, date])

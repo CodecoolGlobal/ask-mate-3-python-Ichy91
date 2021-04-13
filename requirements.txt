@@ -10,3 +10,4 @@ psycopg2==2.8.6
 requests==2.25.1
 urllib3==1.26.3
 Werkzeug==1.0.1
+bcrypt~=3.2.0
