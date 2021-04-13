@@ -378,9 +378,10 @@ def count_user_activity(cursor: RealDictCursor) -> list:
     LEFT JOIN question ON question.user_id = users.id
     LEFT JOIN answer ON answer.user_id = users.id
     LEFT JOIN comment ON comment.user_id = users.id
-    WHERE users.id = question.user_id OR users.id = answer.user_id OR users.id = comment.user_id
     GROUP BY users.id
+    ORDER BY users.id
     """
+    #WHERE users.id = question.user_id OR users.id = answer.user_id OR users.id = comment.user_id
     cursor.execute(query)
     return cursor.fetchall()
 

@@ -21,7 +21,7 @@ def upload_file(my_request, picture_id, QandA):
 
 def hash_password(plain_text_password):
     hashed_bytes = bcrypt.hashpw(plain_text_password.encode('utf-8'), bcrypt.gensalt())
-    return hashed_bytes
+    return hashed_bytes.decode('utf8')
 
 
 def verify_password(plain_text_password, hashed_password):

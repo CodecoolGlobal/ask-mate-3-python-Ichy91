@@ -7,15 +7,22 @@ app = Flask(__name__)
 logged_in = False
 app.secret_key = os.urandom(16)
 
+
 @app.route("/")
 def main_page():
+    global logged_in
     questions = data_handler.get_five_latest_user_stories()
 
-    return render_template("home.html", questions=questions, title="Home Page")
+    if 'username' in session:
+        return render_template("home.html", questions=questions, title="Home Page", login=logged_in)
+    else:
+        return render_template("home.html", questions=questions, title="Home Page", login=logged_in)
 
 
 @app.route("/list")
 def list_all_questions():
+    global logged_in
+
     column_name = request.args.get('column-name')
     order_direction = request.args.get('order_direction')
 
@@ -87,7 +94,10 @@ def add_question():
             title = request.form["title"]
             message = request.form["message"]
             time = now_time.strftime("%Y/%m/%d %H:%M:%S")
-            user_id = data_handler.get_data_by_username(session['username'])['id']
+            user = data_handler.get_data_by_username(session['username'])
+
+            for data in user:
+                user_id = data['id']
 
             if request.form["image"] == "":
                 image = ""
@@ -112,7 +122,11 @@ def post_answer(question_id):
         if request.method == "POST":
             answer = request.form["answer"]
             time = now_time.strftime("%Y/%m/%d %H:%M:%S")
-            user_id = data_handler.get_data_by_username(session['username'])['id']
+
+            user = data_handler.get_data_by_username(session['username'])
+
+            for data in user:
+                user_id = data['id']
 
             if request.form["image"] == "":
                 image = ""
@@ -140,7 +154,10 @@ def add_new_comment_to_question(question_id):
         if request.method == 'POST':
             time = now_time.strftime("%Y/%m/%d %H:%M:%S")
             message = request.form['new-comment']
-            user_id = data_handler.get_data_by_username(session['username'])['id']
+            user = data_handler.get_data_by_username(session['username'])
+
+            for data in user:
+                user_id = data['id']
 
             data_handler.add_new_comment_to_question(question_id, message, time, user_id)
 
@@ -166,7 +183,10 @@ def add_answer_comment(answer_id):
         if request.method == "POST":
             time = now_time.strftime("%Y/%m/%d %H:%M:%S")
             message = request.form["new-comment"]
-            user_id = data_handler.get_data_by_username(session['username'])['id']
+            user = data_handler.get_data_by_username(session['username'])
+
+            for data in user:
+                user_id = data['id']
 
             data_handler.add_comment_to_answer(answer_id, message, time, user_id)
 
@@ -213,7 +233,6 @@ def delete_answer(answer_id):
         comments = data_handler.list_answer_comment(answer_id)
 
         for answer in answers:
-            print(answer["id"], answer_id)
             if answer["id"] == answer_id:
                 question_id = answer["question_id"]
 
@@ -493,8 +512,7 @@ def register():
             username = request.form['username']
             password = util.hash_password(request.form['password1'])
             users = data_handler.list_users()
-            print(users)
-            date = now_time.strftime("%Y-%m-%d %H:%M:%S")
+            date = now_time.strftime("%Y/%m/%d %H:%M:%S")
             unique = True
 
             for user in users:
@@ -530,6 +548,8 @@ def get_user_data_by_id(user_id):
     list_user = data_handler.list_users()
     count_activity = data_handler.count_user_activity()
 
+    question_id = 0
+
     for comment in comments:
         if user_id == comment['user_id']:
             question_id = comment['question_id']
@@ -541,6 +561,7 @@ def get_user_data_by_id(user_id):
     for question in questions:
         if user_id == question['user_id']:
             question_id = question['id']
+
 
     return render_template('list_user_by_id.html', list_users=list_user, count_activity=count_activity,
                            questions=questions, comments=comments, answers=answers, user_id=user_id,
