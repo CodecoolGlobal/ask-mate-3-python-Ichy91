@@ -4,25 +4,17 @@ import data_handler, util, os, datetime
 
 now_time = datetime.datetime.now()
 app = Flask(__name__)
-logged_in = False
-app.secret_key = os.urandom(16)
 
 
 @app.route("/")
 def main_page():
-    global logged_in
     questions = data_handler.get_five_latest_user_stories()
 
-    if 'username' in session:
-        return render_template("home.html", questions=questions, title="Home Page", login=logged_in)
-    else:
-        return render_template("home.html", questions=questions, title="Home Page", login=logged_in)
+    return render_template("home.html", questions=questions, title="Home Page")
 
 
 @app.route("/list")
 def list_all_questions():
-    global logged_in
-
     column_name = request.args.get('column-name')
     order_direction = request.args.get('order_direction')
 
@@ -94,18 +86,46 @@ def add_question():
             title = request.form["title"]
             message = request.form["message"]
             time = now_time.strftime("%Y/%m/%d %H:%M:%S")
+            user_id = data_handler.get_user_id(session['username'])['id']
 
             if request.form["image"] == "":
                 image = ""
             else:
                 image = "images/" + request.form["image"]
 
-            data_handler.add_new_question(time, title, message, image)
+            data_handler.add_new_question(time, title, message, image, user_id)
 
             return redirect(url_for("main_page"))
 
         else:
             return render_template("add_question.html", title="Add question")
+    else:
+        return redirect(url_for('main_page'))
+
+
+@app.route("/question/<int:question_id>/new-answer", methods=["GET","POST"])
+def post_answer(question_id):
+    global logged_in
+
+    if logged_in:
+        if request.method == "POST":
+            answer = request.form["answer"]
+            time = now_time.strftime("%Y/%m/%d %H:%M:%S")
+            user_id = data_handler.get_user_id(session['username'])['id']
+
+            if request.form["image"] == "":
+                image = ""
+            else:
+                image = "images/" + request.form["image"]
+
+            data_handler.add_new_answer(time, question_id, answer, image, user_id)
+
+            return redirect(url_for("display_post", question_id=question_id))
+
+        else:
+            questions = data_handler.get_all_user_story()
+
+            return render_template("post_answer.html", title="Post comment", questions=questions, question_id=question_id)
     else:
         return redirect(url_for('main_page'))
 
@@ -119,38 +139,40 @@ def add_new_comment_to_question(question_id):
         if request.method == 'POST':
             time = now_time.strftime("%Y/%m/%d %H:%M:%S")
             message = request.form['new-comment']
+            user_id = data_handler.get_user_id(session['username'])['id']
 
-            data_handler.add_new_comment_to_question(question_id, message, time)
+            data_handler.add_new_comment_to_question(question_id, message, time, user_id)
 
             return redirect(url_for('display_post', question_id=question_id))
 
         return render_template('add_comment_question.html', questions=questions, question_id=question_id)
+
     else:
         return redirect(url_for('main_page'))
 
 
-@app.route("/question/<int:question_id>/new-answer", methods=["GET","POST"])
-def post_answer(question_id):
+@app.route("/answer/<int:answer_id>/new-comment", methods=["GET","POST"])
+def add_answer_comment(answer_id):
     global logged_in
 
     if logged_in:
+        answers = data_handler.get_all_user_answer()
+        questions = data_handler.get_all_user_answer()
+
+        for index in range(len(answers)):
+            question_id = answers[index]["question_id"]
+
         if request.method == "POST":
-            answer = request.form["answer"]
             time = now_time.strftime("%Y/%m/%d %H:%M:%S")
+            message = request.form["new-comment"]
+            user_id = data_handler.get_user_id(session['username'])['id']
 
-            if request.form["image"] == "":
-                image = ""
-            else:
-                image = "images/" + request.form["image"]
-
-            data_handler.add_new_answer(time, question_id, answer, image)
+            data_handler.add_comment_to_answer(answer_id, message, time, user_id)
 
             return redirect(url_for("display_post", question_id=question_id))
 
-        else:
-            questions = data_handler.get_all_user_story()
+        return render_template("add_comment_answer.html", answers=answers, questions=questions, answer_id=answer_id)
 
-            return render_template("post_answer.html", title="Post comment", questions=questions, question_id=question_id)
     else:
         return redirect(url_for('main_page'))
 
@@ -324,29 +346,6 @@ def search_phrase():
             right_ids.append(element['id'])
 
     return render_template('searched_questions.html', phrase=phrase, questions=questions, ids=right_ids, answers=answers)
-
-
-@app.route("/answer/<int:answer_id>/new-comment", methods=["GET","POST"])
-def add_answer_comment(answer_id):
-    global logged_in
-
-    if logged_in:
-        answers = data_handler.get_all_user_answer()
-        questions = data_handler.get_all_user_answer()
-
-        for index in range(len(answers)):
-            question_id = answers[index]["question_id"]
-
-        if request.method == "POST":
-            time = now_time.strftime("%Y/%m/%d %H:%M:%S")
-            message = request.form["new-comment"]
-            data_handler.add_comment_to_answer(answer_id,message,time)
-
-            return redirect(url_for("display_post", question_id=question_id))
-
-        return render_template("add_comment_answer.html", answers=answers, questions=questions, answer_id=answer_id)
-    else:
-        return redirect(url_for('main_page'))
 
 
 @app.route("/answer/<int:answer_id>/edit", methods=["GET","POST"])
