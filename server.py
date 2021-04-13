@@ -305,6 +305,13 @@ def question_vote_down(question_id):
 
     if logged_in:
         questions = data_handler.get_all_user_story()
+        user_id_dict = data_handler.get_data_by_question_id(question_id)
+        user_id = next(user_id['user_id'] for user_id in user_id_dict)
+
+        if user_id:
+            user_details = data_handler.get_data_by_user_id(user_id)
+            reputation_number = next(user_detail['reputation'] for user_detail in user_details)
+            data_handler.change_user_reputation(user_id, reputation_number - 2)
 
         for question in questions:
             if question["id"] == question_id:
@@ -355,8 +362,17 @@ def answer_vote_down(answer_id):
     if logged_in:
         answers = data_handler.get_all_user_answer()
 
-        for index in range(len(answers)):
-            question_id = answers[index]["question_id"]
+        user_id_dict = data_handler.get_data_by_answer_id(answer_id)
+        user_id = next(user_id['user_id'] for user_id in user_id_dict)
+
+        if user_id:
+            user_details = data_handler.get_data_by_user_id(user_id)
+            reputation_number = next(user_detail['reputation'] for user_detail in user_details)
+            data_handler.change_user_reputation(user_id, reputation_number - 2)
+
+        for answer in answers:
+            if answer['id'] == answer_id:
+                question_id = answer["question_id"]
 
         for answer in answers:
             if answer["id"] == answer_id:
