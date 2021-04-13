@@ -1,12 +1,6 @@
-#Implement sorting for the question list.
-#The question list can be sorted by title, submission time, message, number of views, and number of votes
-#You can choose the direction: ascending or descending
-#The order is passed as query string parameters, for example /list?order_by=title&order_direction=desc
-
 from flask import Flask, render_template, redirect, request, url_for
 from werkzeug.utils import secure_filename
-import os
-import bcrypt
+import os, bcrypt
 
 app = Flask(__name__)
 

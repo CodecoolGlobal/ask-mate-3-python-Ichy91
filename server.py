@@ -1,22 +1,28 @@
-from flask import Flask, render_template, redirect, request, url_for
-import data_handler, util
-import datetime
-import util
+from flask import Flask, render_template, redirect, request, url_for, session, escape
+import data_handler, util, os, datetime
 #from werkzeug.utils import secure_filename
 
 now_time = datetime.datetime.now()
 app = Flask(__name__)
+logged_in = False
+app.secret_key = os.urandom(16)
 
 
 @app.route("/")
 def main_page():
+    global logged_in
     questions = data_handler.get_five_latest_user_stories()
 
-    return render_template("home.html", questions=questions, title="Home Page")
+    if 'username' in session:
+        return render_template("home.html", questions=questions, title="Home Page", login=logged_in)
+    else:
+        return render_template("home.html", questions=questions, title="Home Page", login=logged_in)
 
 
 @app.route("/list")
 def list_all_questions():
+    global logged_in
+
     column_name = request.args.get('column-name')
     order_direction = request.args.get('order_direction')
 
@@ -27,7 +33,36 @@ def list_all_questions():
     else:
         questions = data_handler.get_all_user_story()
 
-    return render_template("list.html", questions=questions, title="All questions")
+    return render_template("list.html", questions=questions, title="All questions", login=logged_in)
+
+
+@app.route("/login", methods=['GET', 'POST'])
+def login():
+
+    if request.method == 'POST':
+        session['username'] = request.form['username']
+        session['password'] = request.form['password']
+        datas_of_user = data_handler.get_data_by_username(session['username'])
+        if datas_of_user:
+            for data_of_user in datas_of_user:
+                users_password = data_of_user['password']
+            if util.verify_password(session['password'], users_password):
+                global logged_in
+                logged_in = True
+                return redirect(url_for('main_page'))
+
+        return render_template('login.html', title="Login", error='Invalid login attempt')
+
+    return render_template('login.html', title="Login")
+
+
+@app.route('/logout')
+def logout():
+    session.pop('username', None)
+    session.pop('password', None)
+    global logged_in
+    logged_in = False
+    return redirect(url_for('main_page'))
 
 
 @app.route("/question/<int:question_id>")
@@ -53,185 +88,228 @@ def display_post(question_id):
 
 @app.route("/add-question", methods=["GET","POST"])
 def add_question():
-    if request.method == "POST":
-        title = request.form["title"]
-        message = request.form["message"]
-        time = now_time.strftime("%Y/%m/%d %H:%M:%S")
+    global logged_in
+    if logged_in:
+        if request.method == "POST":
+            title = request.form["title"]
+            message = request.form["message"]
+            time = now_time.strftime("%Y/%m/%d %H:%M:%S")
 
-        if request.form["image"] == "":
-            image = ""
+            if request.form["image"] == "":
+                image = ""
+            else:
+                image = "images/" + request.form["image"]
+
+            data_handler.add_new_question(time, title, message, image)
+
+            return redirect(url_for("main_page"))
+
         else:
-            image = "images/" + request.form["image"]
-
-
-        data_handler.add_new_question(time, title, message, image)
-
-        return redirect(url_for("main_page"))
-
+            return render_template("add_question.html", title="Add question")
     else:
-        return render_template("add_question.html", title="Add question")
+        return redirect(url_for('main_page'))
 
 
 @app.route("/question/<int:question_id>/new-comment", methods=["GET","POST"])
 def add_new_comment_to_question(question_id):
     questions = data_handler.get_all_user_story()
 
-    if request.method == 'POST':
-        time = now_time.strftime("%Y/%m/%d %H:%M:%S")
-        message = request.form['new-comment']
+    global logged_in
+    if logged_in:
+        if request.method == 'POST':
+            time = now_time.strftime("%Y/%m/%d %H:%M:%S")
+            message = request.form['new-comment']
 
-        data_handler.add_new_comment_to_question(question_id, message, time)
+            data_handler.add_new_comment_to_question(question_id, message, time)
 
-        return redirect(url_for('display_post', question_id=question_id))
+            return redirect(url_for('display_post', question_id=question_id))
 
-    return render_template('add_comment_question.html', questions=questions, question_id=question_id)
+        return render_template('add_comment_question.html', questions=questions, question_id=question_id)
+    else:
+        return redirect(url_for('main_page'))
 
 
 @app.route("/question/<int:question_id>/new-answer", methods=["GET","POST"])
 def post_answer(question_id):
+    global logged_in
 
-    if request.method == "POST":
-        answer = request.form["answer"]
-        time = now_time.strftime("%Y/%m/%d %H:%M:%S")
+    if logged_in:
+        if request.method == "POST":
+            answer = request.form["answer"]
+            time = now_time.strftime("%Y/%m/%d %H:%M:%S")
 
-        if request.form["image"] == "":
-            image = ""
+            if request.form["image"] == "":
+                image = ""
+            else:
+                image = "images/" + request.form["image"]
+
+            data_handler.add_new_answer(time, question_id, answer, image)
+
+            return redirect(url_for("display_post", question_id=question_id))
+
         else:
-            image = "images/" + request.form["image"]
+            questions = data_handler.get_all_user_story()
 
-        data_handler.add_new_answer(time, question_id, answer, image)
-
-        return redirect(url_for("display_post", question_id=question_id))
-
+            return render_template("post_answer.html", title="Post comment", questions=questions, question_id=question_id)
     else:
-        questions = data_handler.get_all_user_story()
-
-        return render_template("post_answer.html", title="Post comment", questions=questions, question_id=question_id)
+        return redirect(url_for('main_page'))
 
 
 @app.route("/question/<int:question_id>/delete")
 def delete_question(question_id):
-
     answers = data_handler.get_all_user_answer()
     correct_answer_ids = []
+    global logged_in
 
-    for answer in answers:
-        if answer["question_id"] == question_id:
-            correct_answer_ids.append(answer["id"])
+    if logged_in:
+        for answer in answers:
+            if answer["question_id"] == question_id:
+                correct_answer_ids.append(answer["id"])
 
-    for answer_id in correct_answer_ids:
-        data_handler.delete_comment(answer_id)
+        for answer_id in correct_answer_ids:
+            data_handler.delete_comment(answer_id)
 
-    data_handler.delete_answers_by_question(question_id)
-    data_handler.delete_comment_question(question_id)
-    data_handler.delete_tag_before_delete_question(question_id)
+        data_handler.delete_answers_by_question(question_id)
+        data_handler.delete_comment_question(question_id)
+        data_handler.delete_tag_before_delete_question(question_id)
 
+        data_handler.delete_question(question_id)
 
-    data_handler.delete_question(question_id)
-
-    return redirect(url_for("main_page"))
+        return redirect(url_for("main_page"))
+    else:
+        return redirect(url_for("main_page"))
 
 
 @app.route("/answer/<int:answer_id>/delete")
 def delete_answer(answer_id):
-    answers = data_handler.get_all_user_answer()
-    comments = data_handler.list_answer_comment(answer_id)
+    global logged_in
 
-    for answer in answers:
-        print(answer["id"], answer_id)
-        if answer["id"] == answer_id:
-            question_id = answer["question_id"]
+    if logged_in:
+        answers = data_handler.get_all_user_answer()
+        comments = data_handler.list_answer_comment(answer_id)
 
-    data_handler.delete_comment(answer_id)
-    data_handler.delete_answer(answer_id)
+        for answer in answers:
+            print(answer["id"], answer_id)
+            if answer["id"] == answer_id:
+                question_id = answer["question_id"]
 
-    return redirect(url_for("display_post", question_id=question_id))
+        data_handler.delete_comment(answer_id)
+        data_handler.delete_answer(answer_id)
+
+        return redirect(url_for("display_post", question_id=question_id))
+    else:
+        return redirect(url_for('main_page'))
 
 
 @app.route("/question/<int:question_id>/edit", methods=["GET","POST"])
 def edit_question(question_id):
-    if request.method == "POST":
-        updated_title = request.form["title"]
-        updated_message = request.form["message"]
+    global logged_in
 
-        if request.form["image"] == "":
-            image = ""
+    if logged_in:
+        if request.method == "POST":
+            updated_title = request.form["title"]
+            updated_message = request.form["message"]
+
+            if request.form["image"] == "":
+                image = ""
+            else:
+                image = "images/"+request.form["image"]
+            #updating
+            data_handler.update_user_data(updated_title,updated_message,image, question_id)
+
+            return redirect(url_for("display_post", question_id=question_id))
+
         else:
-            image = "images/"+request.form["image"]
-        #updating
-        data_handler.update_user_data(updated_title,updated_message,image, question_id)
+            questions = data_handler.get_all_user_story()
 
-        return redirect(url_for("display_post", question_id=question_id))
-
+            return render_template("edit_question.html", title="Update", questions=questions, question_id=question_id)
     else:
-        questions = data_handler.get_all_user_story()
-
-        return render_template("edit_question.html", title="Update", questions=questions, question_id=question_id)
+        return redirect(url_for('main_page'))
 
 
-#Vote section
+# Vote section
 @app.route("/question/<int:question_id>/vote_up")
 def question_vote_up(question_id):
-    questions = data_handler.get_all_user_story()
+    global logged_in
 
-    for question in questions:
-        if question["id"] == question_id:
-            vote_number = int(question["vote_number"]) + 1
+    if logged_in:
+        questions = data_handler.get_all_user_story()
 
-    data_handler.question_vote(vote_number, question_id)
+        for question in questions:
+            if question["id"] == question_id:
+                vote_number = int(question["vote_number"]) + 1
 
-    return redirect(url_for("main_page"))
+        data_handler.question_vote(vote_number, question_id)
+
+        return redirect(url_for("main_page"))
+
+    else:
+        return redirect(url_for("main_page"))
 
 
 @app.route("/question/<int:question_id>/vote_down")
 def question_vote_down(question_id):
-    questions = data_handler.get_all_user_story()
+    global logged_in
 
-    for question in questions:
-        if question["id"] == question_id:
-            vote_number = int(question["vote_number"]) -1
+    if logged_in:
+        questions = data_handler.get_all_user_story()
 
-    data_handler.question_vote(vote_number,question_id)
+        for question in questions:
+            if question["id"] == question_id:
+                vote_number = int(question["vote_number"]) - 1
 
-    return redirect(url_for("main_page"))
+        data_handler.question_vote(vote_number, question_id)
+
+        return redirect(url_for("main_page"))
+    else:
+        return redirect(url_for("main_page"))
 
 
 @app.route("/answer/<int:answer_id>/vote_up")
 def answer_vote_up(answer_id):
-    answers = data_handler.get_all_user_answer()
+    global logged_in
 
-    for index in range(len(answers)):
-        question_id = answers[index]["question_id"]
+    if logged_in:
+        answers = data_handler.get_all_user_answer()
 
-    for answer in answers:
-        if answer["id"] == answer_id:
-            vote_number = int(answer["vote_number"]) + 1
+        for index in range(len(answers)):
+            question_id = answers[index]["question_id"]
 
-    data_handler.answer_vote(vote_number,answer_id)
+        for answer in answers:
+            if answer["id"] == answer_id:
+                vote_number = int(answer["vote_number"]) + 1
 
-    return redirect(url_for("display_post", question_id=question_id))
+        data_handler.answer_vote(vote_number,answer_id)
+
+        return redirect(url_for("display_post", question_id=question_id))
+    else:
+        return redirect(url_for('main_page'))
 
 
 @app.route("/answer/<int:answer_id>/vote_down")
 def answer_vote_down(answer_id):
-    answers = data_handler.get_all_user_answer()
+    global logged_in
 
-    for index in range(len(answers)):
-        question_id = answers[index]["question_id"]
+    if logged_in:
+        answers = data_handler.get_all_user_answer()
 
-    for answer in answers:
-        if answer["id"] == answer_id:
-            vote_number = int(answer["vote_number"]) - 1
+        for index in range(len(answers)):
+            question_id = answers[index]["question_id"]
 
-    data_handler.answer_vote(vote_number, answer_id)
+        for answer in answers:
+            if answer["id"] == answer_id:
+                vote_number = int(answer["vote_number"]) - 1
 
-    return redirect(url_for("display_post", question_id=question_id))
+        data_handler.answer_vote(vote_number, answer_id)
+
+        return redirect(url_for("display_post", question_id=question_id))
+    else:
+        return redirect(url_for('main_page'))
 
 
 @app.route('/search')
 def search_phrase():
     phrase = str(request.args.get('phrase')).lower()
-
 
     questions = data_handler.get_all_user_story()
     answers = data_handler.get_all_user_answer()
@@ -249,128 +327,161 @@ def search_phrase():
 
 @app.route("/answer/<int:answer_id>/new-comment", methods=["GET","POST"])
 def add_answer_comment(answer_id):
-    answers = data_handler.get_all_user_answer()
-    questions = data_handler.get_all_user_answer()
+    global logged_in
 
-    for index in range(len(answers)):
-        question_id = answers[index]["question_id"]
+    if logged_in:
+        answers = data_handler.get_all_user_answer()
+        questions = data_handler.get_all_user_answer()
 
-    if request.method == "POST":
-        time = now_time.strftime("%Y/%m/%d %H:%M:%S")
-        message = request.form["new-comment"]
-        data_handler.add_comment_to_answer(answer_id,message,time)
+        for index in range(len(answers)):
+            question_id = answers[index]["question_id"]
 
-        return redirect(url_for("display_post", question_id=question_id))
+        if request.method == "POST":
+            time = now_time.strftime("%Y/%m/%d %H:%M:%S")
+            message = request.form["new-comment"]
+            data_handler.add_comment_to_answer(answer_id,message,time)
 
-    return render_template("add_comment_answer.html", answers=answers, questions=questions, answer_id=answer_id)
+            return redirect(url_for("display_post", question_id=question_id))
+
+        return render_template("add_comment_answer.html", answers=answers, questions=questions, answer_id=answer_id)
+    else:
+        return redirect(url_for('main_page'))
 
 
 @app.route("/answer/<int:answer_id>/edit", methods=["GET","POST"])
 def edit_answer(answer_id):
+    global logged_in
 
-    answers = data_handler.get_all_user_answer()
-    questions = data_handler.get_all_user_answer()
+    if logged_in:
+        answers = data_handler.get_all_user_answer()
+        questions = data_handler.get_all_user_answer()
 
-    for answer in answers:
-        if answer["id"] == answer_id:
-            question_id = answer["question_id"]
+        for answer in answers:
+            if answer["id"] == answer_id:
+                question_id = answer["question_id"]
 
-    if request.method == "POST":
-        message = request.form["updated-answer"]
+        if request.method == "POST":
+            message = request.form["updated-answer"]
 
-        if request.form["image"] == "":
-            image = ""
-        else:
-            image = "images/"+request.form["image"]
+            if request.form["image"] == "":
+                image = ""
+            else:
+                image = "images/"+request.form["image"]
 
+            data_handler.update_user_answer(message,image,answer_id)
 
-        data_handler.update_user_answer(message,image,answer_id)
+            return redirect(url_for("display_post", question_id=question_id))
 
-        return redirect(url_for("display_post", question_id=question_id))
-
-    return render_template("edit_answer.html", answers=answers, questions=questions, answer_id=answer_id, question_id=question_id)
+        return render_template("edit_answer.html", answers=answers, questions=questions, answer_id=answer_id, question_id=question_id)
+    else:
+        return redirect(url_for('main_page'))
 
 
 @app.route("/comment/<int:comment_id>/edit", methods=["GET","POST"])
 def edit_comment(comment_id):
-    comments = data_handler.list_all_comments()
-    questions = data_handler.get_all_user_story()
-    answers = data_handler.get_all_user_answer()
+    global logged_in
 
-    if request.method == "POST":
-        time = now_time.strftime("%Y/%m/%d %H:%M:%S")
-        message = request.form["updated-comment"]
+    if logged_in:
+        comments = data_handler.list_all_comments()
+        questions = data_handler.get_all_user_story()
+        answers = data_handler.get_all_user_answer()
 
-        for comment in comments:
-            if comment["id"] == comment_id:
-                if comment["edited_count"] == None:
-                    edit_counter = 1
-                else:
-                    edit_counter = int(comment["edited_count"]) + 1
+        if request.method == "POST":
+            time = now_time.strftime("%Y/%m/%d %H:%M:%S")
+            message = request.form["updated-comment"]
 
-        data_handler.update_comment(message,time,edit_counter,comment_id)
+            for comment in comments:
+                if comment["id"] == comment_id:
+                    if comment["edited_count"] == None:
+                        edit_counter = 1
+                    else:
+                        edit_counter = int(comment["edited_count"]) + 1
 
-        #return redirect(url_for("display_post", question_id=question_id))
-        return redirect(url_for("main_page"))
+            data_handler.update_comment(message,time,edit_counter,comment_id)
 
-    return render_template("edit_comment.html", comment_id=comment_id, comments=comments,
-                           questions=questions, answers=answers)
+            # return redirect(url_for("display_post", question_id=question_id))
+            return redirect(url_for("main_page"))
+
+        return render_template("edit_comment.html", comment_id=comment_id, comments=comments,
+                               questions=questions, answers=answers)
+    else:
+        return redirect(url_for('main_page'))
 
 
 @app.route("/comments/<int:comment_id>/delete")
 def delete_comment(comment_id):
+    global logged_in
+
+    if logged_in:
+        questions = data_handler.get_all_user_story()
+        answers = data_handler.get_all_user_answer()
+        comments = data_handler.list_all_comments()
+
+        for comment in comments:
+            for question in questions:
+                if question["id"] == comment["question_id"]:
+                    question_id = question["id"]
+            for answer in answers:
+                if answer["id"] == comment["answer_id"]:
+                    question_id = answer["question_id"]
+
+        data_handler.delete_comment_id(comment_id)
+
+        return redirect(url_for("display_post", question_id=question_id))
+    else:
+        return redirect(url_for('main_page'))
 
 
-    questions = data_handler.get_all_user_story()
-    answers = data_handler.get_all_user_answer()
-    comments = data_handler.list_all_comments()
+@app.route("/tags")
+def list_tags():
+    tags_and_occurence = data_handler.tags_and_occurence()
 
-    for comment in comments:
-        for question in questions:
-            if question["id"] == comment["question_id"]:
-                question_id = question["id"]
-        for answer in answers:
-            if answer["id"] == comment["answer_id"]:
-                question_id = answer["question_id"]
-
-
-    data_handler.delete_comment_id(comment_id)
-    return redirect(url_for("display_post", question_id=question_id))
+    return render_template('display_tags.html', tags=tags_and_occurence)
 
 
 @app.route("/question/<int:question_id>/new-tag", methods=["GET","POST"])
 def add_question_tag(question_id):
+    global logged_in
 
-    try:
-        tags = data_handler.get_tags()
-        if request.method == 'POST':
-            if 'new-tag' in request.form:
-                for tag in tags:
-                    if tag['name'] == request.form['new-tag']:
-                        return render_template('adding_tag.html', tags=tags,  question_id=question_id)
+    if logged_in:
+        try:
+            tags = data_handler.get_tags()
+            if request.method == 'POST':
+                if 'new-tag' in request.form:
+                    for tag in tags:
+                        if tag['name'] == request.form['new-tag']:
+                            return render_template('adding_tag.html', tags=tags,  question_id=question_id)
 
-                data_handler.add_new_tag(request.form['new-tag'])
-                new_tag_id = data_handler.max_tag_id()
-                data_handler.insert_new_ids(question_id, new_tag_id[0]['max'])
+                    data_handler.add_new_tag(request.form['new-tag'])
+                    new_tag_id = data_handler.max_tag_id()
+                    data_handler.insert_new_ids(question_id, new_tag_id[0]['max'])
 
-            elif 'existing-tags' in request.form:
-                existing_tag = request.form['existing-tags']
-                existing_tag_id = data_handler.get_id_to_tag(existing_tag)
-                data_handler.insert_new_ids(question_id, existing_tag_id[0]['id'])
+                elif 'existing-tags' in request.form:
+                    existing_tag = request.form['existing-tags']
+                    existing_tag_id = data_handler.get_id_to_tag(existing_tag)
+                    data_handler.insert_new_ids(question_id, existing_tag_id[0]['id'])
 
+                return redirect(url_for('display_post', question_id=question_id))
+
+            return render_template('adding_tag.html', tags=tags,  question_id=question_id)
+
+        except:
             return redirect(url_for('display_post', question_id=question_id))
 
-        return render_template('adding_tag.html', tags=tags,  question_id=question_id)
-    except:
-        return redirect(url_for('display_post', question_id=question_id))
+    else:
+        return redirect(url_for('main_page'))
 
 
 @app.route("/question/<int:question_id>/tag/<int:tag_id>/delete")
 def delete_tag(question_id,tag_id):
+    global logged_in
 
-    data_handler.delete_tags(question_id, tag_id)
+    if logged_in:
+        data_handler.delete_tags(question_id, tag_id)
 
-    return redirect(url_for("display_post", question_id=question_id))
+        return redirect(url_for("display_post", question_id=question_id))
+    else:
+        return redirect(url_for('main_page'))
 
 
 @app.route("/registration", methods=['GET', 'POST'])
@@ -382,15 +493,21 @@ def register():
             usernames = data_handler.get_users()
             date = now_time.strftime("%Y-%m-%d %H:%M:%S")
             unique = True
+
             for user_name in usernames:
                 if user_name['name'] == username:
                     unique = False
+
             if unique:
                 data_handler.add_new_user(username, password, date)
                 return redirect(url_for('main_page'))
+
             return render_template('register_page.html', error_message = "ERROR: Username already in use!")
+
         return render_template('register_page.html', error_message = "ERROR: Passwords do not match!")
+
     return render_template('register_page.html', error_message = "")
+
 
 if __name__ == '__main__':
     app.run(

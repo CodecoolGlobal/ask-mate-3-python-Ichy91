@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block head %}
+   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/display_question.css')}}">
+{% endblock %}
+
+
+{% block content %}
+    <main>
+        <ul>
+            {% for tag in tags %}
+                <li>{{ tag.name }} -- {{ tag.occurence }}</li>
+            {% endfor %}
+        </ul>
+    </main>
+{% endblock %}

@@ -350,6 +350,27 @@ def delete_tag_before_delete_question(cursor: RealDictCursor, question_id) -> li
 
 
 @database_common.connection_handler
+def get_data_by_username(cursor: RealDictCursor, username: str) -> list:
+    query = """
+        SELECT * FROM users
+        WHERE name = %s
+    """
+    cursor.execute(query, (username, ))
+    return cursor.fetchall()
+
+
+@database_common.connection_handler
+def tags_and_occurence(cursor: RealDictCursor) -> list:
+    query = """
+        SELECT name, COUNT(name) AS occurence
+        FROM tag
+        GROUP BY name
+    """
+    cursor.execute(query)
+    return cursor.fetchall()
+
+
+@database_common.connection_handler
 def get_users(cursor: RealDictCursor) -> list:
     query = """
     SELECT name FROM users

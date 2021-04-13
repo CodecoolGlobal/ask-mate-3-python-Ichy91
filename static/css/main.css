@@ -10,3 +10,7 @@ a {
 hr {
     background-color:salmon;
 }
+
+#login_form {
+    text-align: center;
+}
