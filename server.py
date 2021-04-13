@@ -4,7 +4,8 @@ import data_handler, util, os, datetime
 
 now_time = datetime.datetime.now()
 app = Flask(__name__)
-
+logged_in = False
+app.secret_key = os.urandom(16)
 
 @app.route("/")
 def main_page():
