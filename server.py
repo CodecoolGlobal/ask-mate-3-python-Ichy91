@@ -533,10 +533,9 @@ def register():
 @app.route("/users")
 def list_users():
     #if session:
-    list_user = data_handler.list_users()
     count_activity = data_handler.count_user_activity()
 
-    return render_template('list_users.html', list_users=list_user, count_activity=count_activity)
+    return render_template('list_users.html', count_activity=count_activity)
     #return redirect(url_for('main_page'))
 
 
@@ -545,25 +544,26 @@ def get_user_data_by_id(user_id):
     comments = data_handler.list_all_comments()
     questions = data_handler.get_all_user_story()
     answers = data_handler.get_all_user_answer()
-    list_user = data_handler.list_users()
     count_activity = data_handler.count_user_activity()
 
     question_id = 0
 
-    for comment in comments:
-        if user_id == comment['user_id']:
-            question_id = comment['question_id']
+    # for comment in comments:
+    #     if user_id == comment['user_id']:
+    #         question_id = comment['question_id']
+    #         print(question_id)
+    #
+    # for answer in answers:
+    #     if user_id == answer['user_id']:
+    #         question_id = answer['question_id']
+    #         print(question_id)
+    #
+    # for question in questions:
+    #     if user_id == question['user_id']:
+    #         question_id = question['id']
+    #         print(question_id)
 
-    for answer in answers:
-        if user_id == answer['user_id']:
-            question_id = answer['question_id']
-
-    for question in questions:
-        if user_id == question['user_id']:
-            question_id = question['id']
-
-
-    return render_template('list_user_by_id.html', list_users=list_user, count_activity=count_activity,
+    return render_template('list_user_by_id.html', count_activity=count_activity,
                            questions=questions, comments=comments, answers=answers, user_id=user_id,
                            question_id=question_id)
 

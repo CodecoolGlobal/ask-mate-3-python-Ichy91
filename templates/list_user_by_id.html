@@ -36,21 +36,18 @@
     </thead>
 
     <tbody>
-    {% for user in list_users %}
-        {% for count in count_activity %}
-            {% if user_id == user.id %}
+    {% for count in count_activity %}
+            {% if user_id == count.id %}
     <tr>
-                <th>{{ user.id }}</th>
-                <th>{{ user.name }}</th>
-                <th>{{ user.created_date }}</th>
+                <th>{{ count.id }}</th>
+                <th>{{ count.name }}</th>
+                <th>{{ count.created_date }}</th>
                 <th>{{ count.asked_question  }}</th>
                 <th>{{ count.answered }}</th>
                 <th>{{ count.commented }}</th>
                 <th>0</th>
-
             {% endif %}
         {% endfor %}
-    {% endfor %}
     </tr>
     </tbody>
     </table>
@@ -88,8 +85,8 @@
     <h3>Comments(s):</h3>
         {% for comment in comments %}
             {% if user_id == comment.user_id %}
-                <p>
-                    <a href="/question/{{ question_id }}" id="user_id">{{ question.message }}</a>
+                <p><br>
+                    <a href="/question/{{ question_id }}" id="user_id">{{ comment.message }}</a>
                 <hr>
                 </p>
             {% endif %}

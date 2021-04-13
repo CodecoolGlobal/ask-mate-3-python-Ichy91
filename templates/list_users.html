@@ -37,17 +37,15 @@
     </thead>
 
     <tbody>
-    {% for user in list_users %}
         {% for count in count_activity %}
     <tr>
-        <th><a href="/user/{{ user.id }}" id="user_id">{{ user.id }}</a></th>
-        <th>{{ user.name }}</th>
-        <th>{{ user.created_date }}</th>
+        <th><a href="/user/{{ count.id }}" id="user_id">{{ count.id }}</a></th>
+        <th>{{ count.name }}</th>
+        <th>{{ count.created_date }}</th>
         <th>{{ count.asked_question  }}</th>
         <th>{{ count.answered }}</th>
         <th>{{ count.commented }}</th>
         <th>0</th>
-            {% endfor %}
         {% endfor %}
     </tr>
     </tbody>

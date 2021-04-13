@@ -372,7 +372,8 @@ def add_new_user(cursor: RealDictCursor, username, hashed_password, date) -> lis
 @database_common.connection_handler
 def count_user_activity(cursor: RealDictCursor) -> list:
     query = """
-    SELECT users.id, COUNT(question.user_id) AS asked_question, 
+    SELECT users.id as id, users.name as name, users.created_date as created_date,
+    COUNT(question.user_id) AS asked_question, 
     COUNT(answer.user_id) AS answered, COUNT(comment.user_id) as commented
     FROM users
     LEFT JOIN question ON question.user_id = users.id
