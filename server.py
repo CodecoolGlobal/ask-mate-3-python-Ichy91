@@ -87,7 +87,7 @@ def add_question():
             title = request.form["title"]
             message = request.form["message"]
             time = now_time.strftime("%Y/%m/%d %H:%M:%S")
-            user_id = data_handler.get_user_id(session['username'])['id']
+            user_id = data_handler.get_data_by_username(session['username'])['id']
 
             if request.form["image"] == "":
                 image = ""
@@ -112,7 +112,7 @@ def post_answer(question_id):
         if request.method == "POST":
             answer = request.form["answer"]
             time = now_time.strftime("%Y/%m/%d %H:%M:%S")
-            user_id = data_handler.get_user_id(session['username'])['id']
+            user_id = data_handler.get_data_by_username(session['username'])['id']
 
             if request.form["image"] == "":
                 image = ""
@@ -140,7 +140,7 @@ def add_new_comment_to_question(question_id):
         if request.method == 'POST':
             time = now_time.strftime("%Y/%m/%d %H:%M:%S")
             message = request.form['new-comment']
-            user_id = data_handler.get_user_id(session['username'])['id']
+            user_id = data_handler.get_data_by_username(session['username'])['id']
 
             data_handler.add_new_comment_to_question(question_id, message, time, user_id)
 
@@ -166,7 +166,7 @@ def add_answer_comment(answer_id):
         if request.method == "POST":
             time = now_time.strftime("%Y/%m/%d %H:%M:%S")
             message = request.form["new-comment"]
-            user_id = data_handler.get_user_id(session['username'])['id']
+            user_id = data_handler.get_data_by_username(session['username'])['id']
 
             data_handler.add_comment_to_answer(answer_id, message, time, user_id)
 
@@ -492,12 +492,13 @@ def register():
         if request.form['password1'] == request.form['password2']:
             username = request.form['username']
             password = util.hash_password(request.form['password1'])
-            usernames = data_handler.get_users()
+            users = data_handler.list_users()
+            print(users)
             date = now_time.strftime("%Y-%m-%d %H:%M:%S")
             unique = True
 
-            for user_name in usernames:
-                if user_name['name'] == username:
+            for user in users:
+                if user['name'] == username:
                     unique = False
 
             if unique:

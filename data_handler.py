@@ -35,6 +35,15 @@ def add_new_question(cursor: RealDictCursor, time, title, message, image, user_i
 
 
 @database_common.connection_handler
+def add_new_answer(cursor: RealDictCursor, time, question_id, message, image, user_id) -> list:
+    query = """
+    INSERT INTO answer(submission_time, vote_number, question_id, message, image, user_id)
+    VALUES (%s, 0, %s, %s, %s, %s)
+    """
+    cursor.execute(query, [time, question_id, message, image, user_id])
+
+
+@database_common.connection_handler
 def update_user_data(cursor: RealDictCursor, title, message, image, question_id):
     query = """
     UPDATE question 
@@ -53,15 +62,6 @@ def get_all_user_answer(cursor: RealDictCursor) -> list:
     """
     cursor.execute(query)
     return cursor.fetchall()
-
-
-@database_common.connection_handler
-def add_new_answer(cursor: RealDictCursor, time, question_id, message, image, user_id) -> list:
-    query = """
-    INSERT INTO answer(submission_time, vote_number, question_id, message, image, user_id)
-    VALUES (%s, 0, %s, %s, %s, %s)
-    """
-    cursor.execute(query, [time, question_id, message, image, user_id])
 
 
 @database_common.connection_handler
@@ -339,6 +339,7 @@ def get_id_to_tag(cursor: RealDictCursor, name: str) -> list:
     cursor.execute(query, [name])
     return cursor.fetchall()
 
+
 @database_common.connection_handler
 def delete_tag_before_delete_question(cursor: RealDictCursor, question_id) -> list:
     query = """
@@ -346,16 +347,6 @@ def delete_tag_before_delete_question(cursor: RealDictCursor, question_id) -> li
     WHERE question_id = %s
     """
     cursor.execute(query, [question_id])
-
-
-@database_common.connection_handler
-def get_data_by_username(cursor: RealDictCursor, username: str) -> list:
-    query = """
-        SELECT * FROM users
-        WHERE name = %s
-    """
-    cursor.execute(query, (username, ))
-    return cursor.fetchall()
 
 
 @database_common.connection_handler
@@ -370,32 +361,12 @@ def tags_and_occurence(cursor: RealDictCursor) -> list:
 
 
 @database_common.connection_handler
-def get_users(cursor: RealDictCursor) -> list:
-    query = """
-    SELECT name FROM users
-    """
-    cursor.execute(query)
-    return cursor.fetchall()
-
-
-@database_common.connection_handler
 def add_new_user(cursor: RealDictCursor, username, hashed_password, date) -> list:
     query = """
     INSERT INTO users(name, password, created_date)
     VALUES (%s, %s, %s)
     """
     cursor.execute(query, [username, hashed_password, date])
-
-
-
-@database_common.connection_handler
-def list_users(cursor: RealDictCursor) -> list:
-    query = """
-    SELECT *
-    FROM users
-    """
-    cursor.execute(query)
-    return cursor.fetchall()
 
 
 @database_common.connection_handler
@@ -410,16 +381,25 @@ def count_user_activity(cursor: RealDictCursor) -> list:
     WHERE users.id = question.user_id OR users.id = answer.user_id OR users.id = comment.user_id
     GROUP BY users.id
     """
-
     cursor.execute(query)
     return cursor.fetchall()
 
 
 @database_common.connection_handler
-def get_user_id(cursor: RealDictCursor, username) -> list:
+def list_users(cursor: RealDictCursor) -> list:
     query = """
-    SELECT * FROM users
-    WHERE name = %s
+    SELECT *
+    FROM users
+    """
+    cursor.execute(query)
+    return cursor.fetchall()
+
+
+@database_common.connection_handler
+def get_data_by_username(cursor: RealDictCursor, username: str) -> list:
+    query = """
+        SELECT * FROM users
+        WHERE name = %s
     """
     cursor.execute(query, [username])
     return cursor.fetchall()
