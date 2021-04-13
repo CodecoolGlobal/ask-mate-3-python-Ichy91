@@ -418,6 +418,16 @@ def get_data_by_user_id(cursor: RealDictCursor, user_id: int) -> list:
 
 
 @database_common.connection_handler
+def get_data_by_answer_id(cursor: RealDictCursor, answer_id: int) -> list:
+    query = """
+        SELECT * FROM answer
+        WHERE id = %s
+    """
+    cursor.execute(query, [answer_id, ])
+    return cursor.fetchall()
+
+
+@database_common.connection_handler
 def get_data_by_question_id(cursor: RealDictCursor, question_id: int) -> list:
     query = """
         SELECT * FROM question

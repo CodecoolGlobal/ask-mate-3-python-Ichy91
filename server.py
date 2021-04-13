@@ -323,20 +323,25 @@ def answer_vote_up(answer_id):
 
     if logged_in:
         answers = data_handler.get_all_user_answer()
-        user_details = data_handler.get_data_by_username(session['username'])
 
-        reputation_number = next(user_detail['reputation'] for user_detail in user_details)
-        user_id = next(user_detail['id'] for user_detail in user_details)
 
-        for index in range(len(answers)):
-            question_id = answers[index]["question_id"]
+        user_id_dict = data_handler.get_data_by_answer_id(answer_id)
+        user_id = next(user_id['user_id'] for user_id in user_id_dict)
+
+        if user_id:
+            user_details = data_handler.get_data_by_user_id(user_id)
+            reputation_number = next(user_detail['reputation'] for user_detail in user_details)
+            data_handler.change_user_reputation(user_id, reputation_number + 10)
+
+        for answer in answers:
+            if answer['id'] == answer_id:
+                question_id = answer["question_id"]
 
         for answer in answers:
             if answer["id"] == answer_id:
                 vote_number = int(answer["vote_number"]) + 1
 
-        data_handler.change_user_reputation(user_id, reputation_number+10)
-        data_handler.answer_vote(vote_number,answer_id)
+        data_handler.answer_vote(vote_number, answer_id)
 
         return redirect(url_for("display_post", question_id=question_id))
     else:
