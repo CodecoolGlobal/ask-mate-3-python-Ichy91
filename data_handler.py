@@ -447,3 +447,11 @@ def change_user_reputation(cursor: RealDictCursor, user_id: int, reputation: int
     cursor.execute(query, [reputation, user_id])
 
 
+@database_common.connection_handler
+def update_answered_status(cursor: RealDictCursor, answered_id: int) -> list:
+    query = """
+               UPDATE answer
+               SET accepted = TRUE
+               WHERE id = %s
+           """
+    cursor.execute(query, [answered_id])

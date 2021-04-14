@@ -606,12 +606,13 @@ def get_user_data_by_id(user_id):
 @app.route("/answer/<int:answer_id>/accept_answer", methods = ["POST"])
 def accept_answer(answer_id):
     global logged_in
+    answered = []
 
     if logged_in:
-        if request.form['accepted']:
-            answered = request.form['accepted']
-            print(answered)
-        #data_handler.accept_answer()
+
+        answered = request.form.getlist('accepted')
+        for answer_id in answered:
+            data_handler.update_answered_status(answer_id)
 
     return "Test"
 
