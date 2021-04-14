@@ -67,12 +67,23 @@ def logout():
 
 @app.route("/question/<int:question_id>")
 def display_post(question_id):
+    global logged_in
     questions = data_handler.get_all_user_story()
     answers = data_handler.get_all_user_answer()
     question_comment = data_handler.list_question_comment(question_id)
     comments = data_handler.list_all_comments()
     questions_tags = data_handler.question_tags()
     tags = data_handler.get_tags()
+
+    if logged_in:
+        user_id = next(user['id'] for user in data_handler.list_users() if session['username'] == user['name'])
+        question_user_id = next(user['user_id'] for user in data_handler.get_data_by_question_id(question_id))
+
+        if user_id == question_user_id:
+            return render_template("display_question_by_owner.html", questions=questions, answers=answers,
+                                   question_id=question_id, title="Post",
+                                   question_comment=question_comment, comments=comments,
+                                   questions_tags=questions_tags, tags=tags)
 
     for question in questions:
         if question['id'] == question_id:
@@ -607,7 +618,6 @@ def accept_answer(question_id):
     global logged_in
 
     if logged_in:
-
         accepted_answer_ids = request.form.getlist('accepted')
 
         answer_ids_dict = data_handler.get_all_answers_of_a_question(question_id)
