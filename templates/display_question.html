@@ -91,7 +91,12 @@
                            id="answer-vote-up" class="btn btn-success">⬆</a><br><br>
                         <a href="/answer/{{ answer.id }}/vote_down"
                            id="answer-vote-down" class="btn btn-danger">⬇</a>
+
+                    {% if answer.accepted == true %}
+                        <p id="answer-title">✅ {{ answer.message }}</p>
+                        {% else %}
                         <p id="answer-title">{{ answer.message }}</p>
+                    {% endif %}
 
                         {% if answer.image %}
                             <br>

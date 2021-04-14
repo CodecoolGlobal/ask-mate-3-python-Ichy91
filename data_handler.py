@@ -363,8 +363,8 @@ def tags_and_occurence(cursor: RealDictCursor) -> list:
 @database_common.connection_handler
 def add_new_user(cursor: RealDictCursor, username, hashed_password, date) -> list:
     query = """
-    INSERT INTO users(name, password, created_date)
-    VALUES (%s, %s, %s)
+    INSERT INTO users(name, password, created_date, reputation)
+    VALUES (%s, %s, %s, 0)
     """
     cursor.execute(query, [username, hashed_password, date])
 
@@ -474,4 +474,14 @@ def get_all_answers_of_a_question(cursor: RealDictCursor, question_id: int) -> l
                WHERE question_id = %s
            """
     cursor.execute(query, [question_id])
+    return cursor.fetchall()
+
+
+@database_common.connection_handler
+def get_user_id_by_answer_id(cursor: RealDictCursor, answer_id: int) -> list:
+    query = """
+               SELECT user_id FROM answer
+               WHERE id = %s
+           """
+    cursor.execute(query, [answer_id])
     return cursor.fetchall()

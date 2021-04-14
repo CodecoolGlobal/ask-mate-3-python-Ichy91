@@ -75,6 +75,12 @@ def display_post(question_id):
     questions_tags = data_handler.question_tags()
     tags = data_handler.get_tags()
 
+    for question in questions:
+        if question['id'] == question_id:
+            view_number = question['view_number'] + 1
+        # view_number
+    data_handler.view_counter(view_number, question_id)
+
     if logged_in:
         user_id = next(user['id'] for user in data_handler.list_users() if session['username'] == user['name'])
         question_user_id = next(user['user_id'] for user in data_handler.get_data_by_question_id(question_id))
@@ -84,12 +90,6 @@ def display_post(question_id):
                                    question_id=question_id, title="Post",
                                    question_comment=question_comment, comments=comments,
                                    questions_tags=questions_tags, tags=tags)
-
-    for question in questions:
-        if question['id'] == question_id:
-            view_number = question['view_number'] +1
-    # view_number
-    data_handler.view_counter(view_number, question_id)
 
     return render_template("display_question.html", questions=questions, answers=answers,
                            question_id=question_id, title="Post",
@@ -625,9 +625,18 @@ def accept_answer(question_id):
         unaccepted_answer_ids = [id for id in answer_ids if str(id) not in accepted_answer_ids]
 
         for answer_id in accepted_answer_ids:
+
             data_handler.update_answered_status(answer_id, True)
+
+            user_id = next(user_id['user_id'] for user_id in data_handler.get_user_id_by_answer_id(answer_id))
+            user_details = data_handler.get_data_by_user_id(user_id)
+            reputation_number = next(user_detail['reputation'] for user_detail in user_details)
+
+            data_handler.change_user_reputation(user_id, reputation_number + 15)
+
         for answer_id in unaccepted_answer_ids:
             data_handler.update_answered_status(answer_id, False)
+
 
     return redirect(url_for('display_post', question_id=question_id))
 
