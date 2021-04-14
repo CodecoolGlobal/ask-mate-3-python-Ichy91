@@ -86,7 +86,7 @@
             {% for answer in answers %}
                 {% if question_id == answer.question_id %}
                     <article>
-                <form method ="post" action="/answer/{{ answer.id }}/accept_answer">
+                <form method ="post" action="/answer/{{ question_id }}/accept_answer">
                     <small id="question-small-tag">{{ answer.submission_time }} | ⇅ {{ answer.vote_number }}</small>
                         <a href="/answer/{{ answer.id }}/vote_up"
                            id="answer-vote-up" class="btn btn-success">⬆</a><br><br>

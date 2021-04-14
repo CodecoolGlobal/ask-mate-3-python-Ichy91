@@ -448,12 +448,30 @@ def change_user_reputation(cursor: RealDictCursor, user_id: int, reputation: int
 
 
 @database_common.connection_handler
-def update_answered_status(cursor: RealDictCursor, answered_id:int) -> list:
+def update_answered_status(cursor: RealDictCursor, answered_id: int, status: bool) -> list:
     query = """
                UPDATE answer
-               SET accepted = CASE accepted
-               WHEN id = %s THEN TRUE
-               ELSE FALSE
-               END
+               SET accepted = %s
+               WHERE id = %s
            """
-    cursor.execute(query, [answered_id])
+    cursor.execute(query, [status, answered_id])
+
+
+@database_common.connection_handler
+def get_question_id_by_answer(cursor: RealDictCursor, answer_id: int) -> list:
+    query = """
+               SELECT question_id FROM answer
+               WHERE id = %s
+           """
+    cursor.execute(query, [answer_id])
+    return cursor.fetchall()
+
+
+@database_common.connection_handler
+def get_all_answers_of_a_question(cursor: RealDictCursor, question_id: int) -> list:
+    query = """
+               SELECT id FROM answer
+               WHERE question_id = %s
+           """
+    cursor.execute(query, [question_id])
+    return cursor.fetchall()

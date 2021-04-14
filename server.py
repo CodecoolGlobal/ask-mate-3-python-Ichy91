@@ -331,7 +331,6 @@ def answer_vote_up(answer_id):
     if logged_in:
         answers = data_handler.get_all_user_answer()
 
-
         user_id_dict = data_handler.get_data_by_answer_id(answer_id)
         user_id = next(user_id['user_id'] for user_id in user_id_dict)
 
@@ -603,19 +602,24 @@ def get_user_data_by_id(user_id):
                            question_id=question_id)
 
 
-@app.route("/answer/<int:answer_id>/accept_answer", methods = ["POST"])
-def accept_answer(answer_id):
+@app.route("/answer/<int:question_id>/accept_answer", methods = ["POST"])
+def accept_answer(question_id):
     global logged_in
-    answered = []
 
-    #if logged_in:
+    if logged_in:
 
-    answered = request.form.getlist('accepted')
-    print(answered)
+        accepted_answer_ids = request.form.getlist('accepted')
 
-    data_handler.update_answered_status(answered)
+        answer_ids_dict = data_handler.get_all_answers_of_a_question(question_id)
+        answer_ids = [id['id'] for id in answer_ids_dict]
+        unaccepted_answer_ids = [id for id in answer_ids if str(id) not in accepted_answer_ids]
 
-    return "Test"
+        for answer_id in accepted_answer_ids:
+            data_handler.update_answered_status(answer_id, True)
+        for answer_id in unaccepted_answer_ids:
+            data_handler.update_answered_status(answer_id, False)
+
+    return redirect(url_for('display_post', question_id=question_id))
 
 
 if __name__ == '__main__':
