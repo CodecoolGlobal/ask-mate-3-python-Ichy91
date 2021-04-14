@@ -603,6 +603,14 @@ def get_user_data_by_id(user_id):
                            question_id=question_id)
 
 
+@app.route("/answer/<int:answer_id>/accept_answer", methods = ["POST"])
+def accept_answer(answer_id):
+    global logged_in
+    if logged_in:
+
+        data_handler.accept_answer()
+
+
 if __name__ == '__main__':
     app.run(
     debug=True,
