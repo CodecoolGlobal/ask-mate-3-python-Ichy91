@@ -639,7 +639,6 @@ def accept_answer(question_id):
         for answer_id in unaccepted_answer_ids:
             data_handler.update_answered_status(answer_id, False)
 
-
     return redirect(url_for('display_post', question_id=question_id))
 
 
