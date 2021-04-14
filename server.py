@@ -608,11 +608,12 @@ def accept_answer(answer_id):
     global logged_in
     answered = []
 
-    if logged_in:
+    #if logged_in:
 
-        answered = request.form.getlist('accepted')
-        for answer_id in answered:
-            data_handler.update_answered_status(answer_id)
+    answered = request.form.getlist('accepted')
+    print(answered)
+
+    data_handler.update_answered_status(answered)
 
     return "Test"
 
