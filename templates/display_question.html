@@ -86,26 +86,27 @@
             {% for answer in answers %}
                 {% if question_id == answer.question_id %}
                     <article>
+                    <form method ="post" action="/answer/{{ answer.id }}/accept_answer">
                         <small id="question-small-tag">{{ answer.submission_time }} | ⇅ {{ answer.vote_number }}</small>
                         <a href="/answer/{{ answer.id }}/vote_up"
                            id="answer-vote-up" class="btn btn-success">⬆</a><br><br>
                         <a href="/answer/{{ answer.id }}/vote_down"
                            id="answer-vote-down" class="btn btn-danger">⬇</a>
                         <p id="answer-title">{{ answer.message }}</p>
-                            <form method ="post" action="/answer/{{ answer.id }}/accept_answer">
-                                <input type="checkbox" name="accepted" id="accepted">
-                            </form>
+
+
+                        <input type="checkbox" name="accepted" id="accepted">
+
                         {% if answer.image %}
                             <br>
                             <img src="{{ url_for('static', filename=answer.image )}}" alt="{{ answer.image }}" id="answer-image">
                             <br>
                         {% endif %}
                         <br>
-                        <a href="/answer/{{ answer.id }}/accept_answer" id="answer-buttons" class="btn btn-primary">Accept answer</a>
+
                         <a href="/answer/{{ answer.id }}/edit" id="answer-buttons" class="btn btn-primary">Edit answer</a>
                         <a href="/answer/{{ answer.id }}/new-comment" id="answer-buttons" class="btn btn-info">Add comment</a>
                         <a href="/answer/{{ answer.id }}/delete" id="answer-buttons" class="btn btn-danger">Delete answer</a>
-
                         <br><br>
                         <p id="comment-title">Comment(s) for the answer:</p>
                             {% for comment in comments %}
@@ -125,7 +126,8 @@
                     </article>
                 {% endif %}
             {% endfor %}
-
+            <button type="submit" id="answer-buttons" class="btn btn-primary">Accept answer</button>
+            </form>
         </section>
     </main>
 {% endblock %}

@@ -606,9 +606,14 @@ def get_user_data_by_id(user_id):
 @app.route("/answer/<int:answer_id>/accept_answer", methods = ["POST"])
 def accept_answer(answer_id):
     global logged_in
-    if logged_in:
 
-        data_handler.accept_answer()
+    if logged_in:
+        if request.form['accepted']:
+            answered = request.form['accepted']
+            print(answered)
+        #data_handler.accept_answer()
+
+    return "Test"
 
 
 if __name__ == '__main__':
