@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, request, url_for
+from flask import Flask
 from werkzeug.utils import secure_filename
 import os, bcrypt
 

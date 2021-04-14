@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, request, url_for, session, escape
+from flask import Flask, render_template, redirect, request, url_for, session
 import data_handler, util, os, datetime
 #from werkzeug.utils import secure_filename
 
@@ -38,17 +38,19 @@ def list_all_questions():
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
-
     if request.method == 'POST':
         session['username'] = request.form['username']
         session['password'] = request.form['password']
         datas_of_user = data_handler.get_data_by_username(session['username'])
+
         if datas_of_user:
             for data_of_user in datas_of_user:
                 users_password = data_of_user['password']
+
             if util.verify_password(session['password'], users_password):
                 global logged_in
                 logged_in = True
+
                 return redirect(url_for('main_page'))
 
         return render_template('login.html', title="Login", error='Invalid login attempt')
@@ -77,6 +79,7 @@ def display_post(question_id):
     for question in questions:
         if question['id'] == question_id:
             view_number = question['view_number'] +1
+
     # view_number
     data_handler.view_counter(view_number, question_id)
 
@@ -89,6 +92,7 @@ def display_post(question_id):
 @app.route("/add-question", methods=["GET","POST"])
 def add_question():
     global logged_in
+
     if logged_in:
         if request.method == "POST":
             title = request.form["title"]
@@ -200,7 +204,6 @@ def add_answer_comment(answer_id):
 
 @app.route("/question/<int:question_id>/delete")
 def delete_question(question_id):
-
     answers = data_handler.get_all_user_answer()
     correct_answer_ids = []
     global logged_in
@@ -230,7 +233,6 @@ def delete_answer(answer_id):
 
     if logged_in:
         answers = data_handler.get_all_user_answer()
-        comments = data_handler.list_answer_comment(answer_id)
 
         for answer in answers:
             if answer["id"] == answer_id:
@@ -273,7 +275,6 @@ def edit_question(question_id):
 # Vote section
 @app.route("/question/<int:question_id>/vote_up")
 def question_vote_up(question_id):
-
     global logged_in
 
     if logged_in:
@@ -320,6 +321,7 @@ def question_vote_down(question_id):
         data_handler.question_vote(vote_number, question_id)
 
         return redirect(url_for("main_page"))
+
     else:
         return redirect(url_for("main_page"))
 
@@ -330,8 +332,6 @@ def answer_vote_up(answer_id):
 
     if logged_in:
         answers = data_handler.get_all_user_answer()
-
-
         user_id_dict = data_handler.get_data_by_answer_id(answer_id)
         user_id = next(user_id['user_id'] for user_id in user_id_dict)
 
