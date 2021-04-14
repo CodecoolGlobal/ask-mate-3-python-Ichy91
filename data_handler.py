@@ -372,17 +372,31 @@ def add_new_user(cursor: RealDictCursor, username, hashed_password, date) -> lis
 @database_common.connection_handler
 def count_user_activity(cursor: RealDictCursor) -> list:
     query = """
-    SELECT users.id as id, users.name as name, users.created_date as created_date,
-    COUNT(question.user_id) AS asked_question, users.reputation as reputation,
-    COUNT(answer.user_id) AS answered, COUNT(comment.user_id) as commented
+    SELECT id,name,created_date,
+           CASE WHEN asked_question IS NULL THEN 0 ELSE asked_question END as asked_question,
+           CASE WHEN answered IS NULL THEN 0 ELSE answered END as answered,
+           CASE WHEN commented IS NULL THEN 0 ELSE commented END as commented,
+           reputation
     FROM users
-    LEFT JOIN question ON question.user_id = users.id
-    LEFT JOIN answer ON answer.user_id = users.id
-    LEFT JOIN comment ON comment.user_id = users.id
-    GROUP BY users.id
-    ORDER BY users.id
+
+    LEFT JOIN(
+        SELECT question.user_id,
+               CASE WHEN question.user_id IS NULL THEN 0 ELSE COUNT(question.user_id) END AS asked_question
+        FROM question
+        GROUP BY user_id) question ON question.user_id = users.id
+
+    LEFT JOIN(
+        SELECT answer.user_id,
+               CASE WHEN answer.user_id IS NULL THEN 0 ELSE COUNT(answer.user_id) END AS answered
+        FROM answer
+        GROUP BY user_id) answer ON answer.user_id = users.id
+
+    LEFT JOIN(
+        SELECT comment.user_id,
+               CASE WHEN comment.user_id IS NULL THEN 0 ELSE COUNT(comment.user_id) END AS commented
+        FROM comment
+        GROUP BY user_id) comment ON comment.user_id = users.id
     """
-    #WHERE users.id = question.user_id OR users.id = answer.user_id OR users.id = comment.user_id
     cursor.execute(query)
     return cursor.fetchall()
 

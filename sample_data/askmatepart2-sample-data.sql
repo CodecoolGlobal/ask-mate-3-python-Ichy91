@@ -80,6 +80,15 @@ CREATE TABLE users (
 ALTER TABLE ONLY users
     ADD CONSTRAINT pk_id PRIMARY KEY (id);
 
+ALTER TABLE ONLY users
+    ADD CONSTRAINT fk_id FOREIGN KEY (id) REFERENCES question(user_id);
+
+ALTER TABLE ONLY users
+    ADD CONSTRAINT fk_id FOREIGN KEY (id) REFERENCES answer(user_id);
+
+ALTER TABLE ONLY users
+    ADD CONSTRAINT fk_id FOREIGN KEY (id) REFERENCES comment(user_id);
+
 ALTER TABLE ONLY answer
     ADD CONSTRAINT pk_answer_id PRIMARY KEY (id);
 
