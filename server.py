@@ -38,6 +38,7 @@ def list_all_questions():
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
+
     if request.method == 'POST':
         session['username'] = request.form['username']
         session['password'] = request.form['password']
@@ -69,6 +70,7 @@ def logout():
 
 @app.route("/question/<int:question_id>")
 def display_post(question_id):
+    global logged_in
     questions = data_handler.get_all_user_story()
     answers = data_handler.get_all_user_answer()
     question_comment = data_handler.list_question_comment(question_id)
@@ -78,10 +80,19 @@ def display_post(question_id):
 
     for question in questions:
         if question['id'] == question_id:
-            view_number = question['view_number'] +1
-
-    # view_number
+            view_number = question['view_number'] + 1
+        # view_number
     data_handler.view_counter(view_number, question_id)
+
+    if logged_in:
+        user_id = next(user['id'] for user in data_handler.list_users() if session['username'] == user['name'])
+        question_user_id = next(user['user_id'] for user in data_handler.get_data_by_question_id(question_id))
+
+        if user_id == question_user_id:
+            return render_template("display_question_by_owner.html", questions=questions, answers=answers,
+                                   question_id=question_id, title="Post",
+                                   question_comment=question_comment, comments=comments,
+                                   questions_tags=questions_tags, tags=tags)
 
     return render_template("display_question.html", questions=questions, answers=answers,
                            question_id=question_id, title="Post",
@@ -332,6 +343,7 @@ def answer_vote_up(answer_id):
 
     if logged_in:
         answers = data_handler.get_all_user_answer()
+
         user_id_dict = data_handler.get_data_by_answer_id(answer_id)
         user_id = next(user_id['user_id'] for user_id in user_id_dict)
 
@@ -601,6 +613,34 @@ def get_user_data_by_id(user_id):
     return render_template('list_user_by_id.html', count_activity=count_activity,
                            questions=questions, comments=comments, answers=answers, user_id=user_id,
                            question_id=question_id)
+
+
+@app.route("/answer/<int:question_id>/accept_answer", methods = ["POST"])
+def accept_answer(question_id):
+    global logged_in
+
+    if logged_in:
+        accepted_answer_ids = request.form.getlist('accepted')
+
+        answer_ids_dict = data_handler.get_all_answers_of_a_question(question_id)
+        answer_ids = [id['id'] for id in answer_ids_dict]
+        unaccepted_answer_ids = [id for id in answer_ids if str(id) not in accepted_answer_ids]
+
+        for answer_id in accepted_answer_ids:
+
+            data_handler.update_answered_status(answer_id, True)
+
+            user_id = next(user_id['user_id'] for user_id in data_handler.get_user_id_by_answer_id(answer_id))
+            user_details = data_handler.get_data_by_user_id(user_id)
+            reputation_number = next(user_detail['reputation'] for user_detail in user_details)
+
+            data_handler.change_user_reputation(user_id, reputation_number + 15)
+
+        for answer_id in unaccepted_answer_ids:
+            data_handler.update_answered_status(answer_id, False)
+
+
+    return redirect(url_for('display_post', question_id=question_id))
 
 
 if __name__ == '__main__':
