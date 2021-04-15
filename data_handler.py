@@ -1,5 +1,4 @@
 from psycopg2 import sql
-from psycopg2.extensions import AsIs
 from psycopg2.extras import RealDictCursor
 import database_common
 
