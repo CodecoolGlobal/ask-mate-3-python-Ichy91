@@ -525,26 +525,9 @@ def get_user_data_by_id(user_id):
     answers = data_handler.get_datas_order_by_ASC('answer', 'submission_time')
     count_activity = data_handler.count_user_activity()
 
-    question_id = 0
-
-    # for comment in comments:
-    #     if user_id == comment['user_id']:
-    #         question_id = comment['question_id']
-    #         print(question_id)
-    #
-    # for answer in answers:
-    #     if user_id == answer['user_id']:
-    #         question_id = answer['question_id']
-    #         print(question_id)
-    #
-    # for question in questions:
-    #     if user_id == question['user_id']:
-    #         question_id = question['id']
-    #         print(question_id)
-
     return render_template('list_user_by_id.html', count_activity=count_activity,
                            questions=questions, comments=comments, answers=answers, user_id=user_id,
-                           question_id=question_id, title="User panel")
+                           title="User panel")
 
 
 @app.route("/answer/<int:question_id>/accept_answer", methods = ["POST"])
