@@ -1,8 +1,7 @@
 from flask import Flask, render_template, redirect, request, url_for, session
-import data_handler, util, os, datetime
+import data_handler, util, os
 #from werkzeug.utils import secure_filename
 
-now_time = datetime.datetime.now()
 app = Flask(__name__)
 logged_in = False
 app.secret_key = os.urandom(16)
@@ -111,7 +110,6 @@ def add_question():
         if request.method == "POST":
             title = request.form["title"]
             message = request.form["message"]
-            time = now_time.strftime("%Y/%m/%d %H:%M:%S")
             user = data_handler.get_data_by_username(session['username'])
 
             for data in user:
@@ -122,7 +120,7 @@ def add_question():
             else:
                 image = "images/" + request.form["image"]
 
-            data_handler.add_new_question(time, title, message, image, user_id)
+            data_handler.add_new_question(title, message, image, user_id)
 
             return redirect(url_for("main_page"))
 
@@ -139,7 +137,6 @@ def post_answer(question_id):
     if logged_in:
         if request.method == "POST":
             answer = request.form["answer"]
-            time = now_time.strftime("%Y/%m/%d %H:%M:%S")
 
             user = data_handler.get_data_by_username(session['username'])
 
@@ -151,7 +148,7 @@ def post_answer(question_id):
             else:
                 image = "images/" + request.form["image"]
 
-            data_handler.add_new_answer(time, question_id, answer, image, user_id)
+            data_handler.add_new_answer(question_id, answer, image, user_id)
 
             return redirect(url_for("display_post", question_id=question_id))
 
@@ -170,14 +167,13 @@ def add_new_comment_to_question(question_id):
 
     if logged_in:
         if request.method == 'POST':
-            time = now_time.strftime("%Y/%m/%d %H:%M:%S")
             message = request.form['new-comment']
             user = data_handler.get_data_by_username(session['username'])
 
             for data in user:
                 user_id = data['id']
 
-            data_handler.add_new_comment_to_question(question_id, message, time, user_id)
+            data_handler.add_new_comment_to_question(question_id, message, user_id)
 
             return redirect(url_for('display_post', question_id=question_id))
 
@@ -199,14 +195,13 @@ def add_answer_comment(answer_id):
             question_id = answers[index]["question_id"]
 
         if request.method == "POST":
-            time = now_time.strftime("%Y/%m/%d %H:%M:%S")
             message = request.form["new-comment"]
             user = data_handler.get_data_by_username(session['username'])
 
             for data in user:
                 user_id = data['id']
 
-            data_handler.add_comment_to_answer(answer_id, message, time, user_id)
+            data_handler.add_comment_to_answer(answer_id, message, user_id)
 
             return redirect(url_for("display_post", question_id=question_id))
 
@@ -457,7 +452,6 @@ def edit_comment(comment_id):
         answers = data_handler.get_all_user_answer()
 
         if request.method == "POST":
-            time = now_time.strftime("%Y/%m/%d %H:%M:%S")
             message = request.form["updated-comment"]
 
             for comment in comments:
@@ -467,7 +461,7 @@ def edit_comment(comment_id):
                     else:
                         edit_counter = int(comment["edited_count"]) + 1
 
-            data_handler.update_comment(message,time,edit_counter,comment_id)
+            data_handler.update_comment(message,edit_counter,comment_id)
 
             # return redirect(url_for("display_post", question_id=question_id))
             return redirect(url_for("main_page"))
@@ -562,7 +556,6 @@ def register():
             username = request.form['username']
             password = util.hash_password(request.form['password1'])
             users = data_handler.list_users()
-            date = now_time.strftime("%Y/%m/%d %H:%M:%S")
             unique = True
 
             for user in users:
@@ -570,7 +563,7 @@ def register():
                     unique = False
 
             if unique:
-                data_handler.add_new_user(username, password, date)
+                data_handler.add_new_user(username, password)
                 return redirect(url_for('main_page'))
 
             return render_template('register_page.html', error_message = "ERROR: Username already in use!", title="Register")
