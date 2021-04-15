@@ -1,6 +1,6 @@
 from flask import Flask, render_template, redirect, request, url_for, session
 import data_handler, util, os, datetime
-#from werkzeug.utils import secure_filename
+
 
 now_time = datetime.datetime.now()
 app = Flask(__name__)
@@ -27,13 +27,7 @@ def list_all_questions():
     column_name = request.args.get('column-name')
     order_direction = request.args.get('order_direction')
     users = data_handler.list_users()
-
-    if column_name and order_direction == 'DESC':
-        questions = data_handler.order_list_descending(column_name)
-    elif column_name and order_direction == 'ASC':
-        questions = data_handler.order_list_ascending(column_name)
-    else:
-        questions = data_handler.get_all_user_story()
+    questions = util.get_questions_in_right_order(column_name, order_direction)
 
     return render_template("list.html", questions=questions, title="All questions", login=logged_in, users=users)
 
@@ -47,10 +41,9 @@ def login():
         datas_of_user = data_handler.get_data_by_username(session['username'])
 
         if datas_of_user:
-            for data_of_user in datas_of_user:
-                users_password = data_of_user['password']
+            user_password = util.get_right_data(datas_of_user, 'password')
 
-            if util.verify_password(session['password'], users_password):
+            if util.verify_password(session['password'], user_password):
                 global logged_in
                 logged_in = True
 
@@ -81,11 +74,7 @@ def display_post(question_id):
     tags = data_handler.get_tags()
     users = data_handler.list_users()
 
-    for question in questions:
-        if question['id'] == question_id:
-            view_number = question['view_number'] + 1
-        # view_number
-    data_handler.view_counter(view_number, question_id)
+    data_handler.view_counter(util.increase_view_number(questions, question_id), question_id)
 
     if logged_in:
         user_id = next(user['id'] for user in data_handler.list_users() if session['username'] == user['name'])
@@ -103,7 +92,7 @@ def display_post(question_id):
                            questions_tags=questions_tags, tags=tags, users=users)
 
 
-@app.route("/add-question", methods=["GET","POST"])
+@app.route("/add-question", methods=["GET", "POST"])
 def add_question():
     global logged_in
 
@@ -112,10 +101,9 @@ def add_question():
             title = request.form["title"]
             message = request.form["message"]
             time = now_time.strftime("%Y/%m/%d %H:%M:%S")
-            user = data_handler.get_data_by_username(session['username'])
 
-            for data in user:
-                user_id = data['id']
+            user_data = data_handler.get_data_by_username(session['username'])
+            user_id = util.get_right_data(user_data, 'id')
 
             if request.form["image"] == "":
                 image = ""
@@ -141,10 +129,8 @@ def post_answer(question_id):
             answer = request.form["answer"]
             time = now_time.strftime("%Y/%m/%d %H:%M:%S")
 
-            user = data_handler.get_data_by_username(session['username'])
-
-            for data in user:
-                user_id = data['id']
+            user_data = data_handler.get_data_by_username(session['username'])
+            user_id = util.get_right_data(user_data, 'id')
 
             if request.form["image"] == "":
                 image = ""
@@ -172,10 +158,8 @@ def add_new_comment_to_question(question_id):
         if request.method == 'POST':
             time = now_time.strftime("%Y/%m/%d %H:%M:%S")
             message = request.form['new-comment']
-            user = data_handler.get_data_by_username(session['username'])
-
-            for data in user:
-                user_id = data['id']
+            user_data = data_handler.get_data_by_username(session['username'])
+            user_id = util.get_right_data(user_data, 'id')
 
             data_handler.add_new_comment_to_question(question_id, message, time, user_id)
 
@@ -195,16 +179,13 @@ def add_answer_comment(answer_id):
         answers = data_handler.get_all_user_answer()
         questions = data_handler.get_all_user_answer()
 
-        for index in range(len(answers)):
-            question_id = answers[index]["question_id"]
+        question_id = next(answer['question_id'] for answer in answers if answer['id'] == answer_id)
 
         if request.method == "POST":
             time = now_time.strftime("%Y/%m/%d %H:%M:%S")
             message = request.form["new-comment"]
-            user = data_handler.get_data_by_username(session['username'])
-
-            for data in user:
-                user_id = data['id']
+            user_data = data_handler.get_data_by_username(session['username'])
+            user_id = util.get_right_data(user_data, 'id')
 
             data_handler.add_comment_to_answer(answer_id, message, time, user_id)
 
@@ -223,17 +204,12 @@ def delete_question(question_id):
     global logged_in
 
     if logged_in:
-        for answer in answers:
-            if answer["question_id"] == question_id:
-                correct_answer_ids.append(answer["id"])
-
-        for answer_id in correct_answer_ids:
-            data_handler.delete_comment(answer_id)
+        [correct_answer_ids.append(answer["id"]) for answer in answers if answer['question_id'] == question_id]
+        [data_handler.delete_comment(answer_id) for answer_id in correct_answer_ids]
 
         data_handler.delete_answers_by_question(question_id)
         data_handler.delete_comment_question(question_id)
         data_handler.delete_tag_before_delete_question(question_id)
-
         data_handler.delete_question(question_id)
 
         return redirect(url_for("main_page"))
@@ -247,10 +223,7 @@ def delete_answer(answer_id):
 
     if logged_in:
         answers = data_handler.get_all_user_answer()
-
-        for answer in answers:
-            if answer["id"] == answer_id:
-                question_id = answer["question_id"]
+        question_id = next(answer['question_id'] for answer in answers if answer['id'] == answer_id)
 
         data_handler.delete_comment(answer_id)
         data_handler.delete_answer(answer_id)
@@ -274,14 +247,14 @@ def edit_question(question_id):
             else:
                 image = "images/"+request.form["image"]
             #updating
-            data_handler.update_user_data(updated_title,updated_message,image, question_id)
+            data_handler.update_user_data(updated_title, updated_message, image, question_id)
 
             return redirect(url_for("display_post", question_id=question_id))
 
         else:
             questions = data_handler.get_all_user_story()
 
-            return render_template("edit_question.html", title="Edit question", questions=questions, question_id=question_id,)
+            return render_template("edit_question.html", title="Edit question", questions=questions, question_id=question_id)
     else:
         return redirect(url_for('main_page'))
 
@@ -294,19 +267,14 @@ def question_vote_up(question_id):
     if logged_in:
 
         questions = data_handler.get_all_user_story()
-        user_id_dict = data_handler.get_data_by_question_id(question_id)
-        user_id = next(user_id['user_id'] for user_id in user_id_dict)
+        user_id = util.get_right_data(data_handler.get_data_by_question_id(question_id), 'user_id')
 
         if user_id:
             user_details = data_handler.get_data_by_user_id(user_id)
             reputation_number = next(user_detail['reputation'] for user_detail in user_details)
             data_handler.change_user_reputation(user_id, reputation_number + 5)
 
-        for question in questions:
-            if question["id"] == question_id:
-                vote_number = int(question["vote_number"]) + 1
-
-        data_handler.question_vote(vote_number, question_id)
+        data_handler.question_vote(util.increase_vote_number(questions, question_id), question_id)
 
         return redirect(url_for("main_page"))
 
@@ -320,19 +288,14 @@ def question_vote_down(question_id):
 
     if logged_in:
         questions = data_handler.get_all_user_story()
-        user_id_dict = data_handler.get_data_by_question_id(question_id)
-        user_id = next(user_id['user_id'] for user_id in user_id_dict)
+        user_id = next(user_id['user_id'] for user_id in data_handler.get_data_by_question_id(question_id))
 
         if user_id:
             user_details = data_handler.get_data_by_user_id(user_id)
             reputation_number = next(user_detail['reputation'] for user_detail in user_details)
             data_handler.change_user_reputation(user_id, reputation_number - 2)
 
-        for question in questions:
-            if question["id"] == question_id:
-                vote_number = int(question["vote_number"]) - 1
-
-        data_handler.question_vote(vote_number, question_id)
+        data_handler.question_vote(util.decrease_vote_number(questions, question_id), question_id)
 
         return redirect(url_for("main_page"))
 
@@ -355,15 +318,8 @@ def answer_vote_up(answer_id):
             reputation_number = next(user_detail['reputation'] for user_detail in user_details)
             data_handler.change_user_reputation(user_id, reputation_number + 10)
 
-        for answer in answers:
-            if answer['id'] == answer_id:
-                question_id = answer["question_id"]
-
-        for answer in answers:
-            if answer["id"] == answer_id:
-                vote_number = int(answer["vote_number"]) + 1
-
-        data_handler.answer_vote(vote_number, answer_id)
+        question_id = util.get_question_id_by_answers(answers, answer_id)
+        data_handler.answer_vote(util.increase_vote_number(answers, answer_id), answer_id)
 
         return redirect(url_for("display_post", question_id=question_id))
     else:
@@ -385,15 +341,8 @@ def answer_vote_down(answer_id):
             reputation_number = next(user_detail['reputation'] for user_detail in user_details)
             data_handler.change_user_reputation(user_id, reputation_number - 2)
 
-        for answer in answers:
-            if answer['id'] == answer_id:
-                question_id = answer["question_id"]
-
-        for answer in answers:
-            if answer["id"] == answer_id:
-                vote_number = int(answer["vote_number"]) - 1
-
-        data_handler.answer_vote(vote_number, answer_id)
+        question_id = util.get_question_id_by_answers(answers, answer_id)
+        data_handler.answer_vote(util.decrease_vote_number(answers, answer_id), answer_id)
 
         return redirect(url_for("display_post", question_id=question_id))
     else:
@@ -410,10 +359,7 @@ def search_phrase():
     extended_id_list = (data_handler.get_search_result_questions_id(phrase)+
                         data_handler.get_search_result_questions_id_of_answers(phrase))
 
-    right_ids = []
-    for element in extended_id_list:
-        if element['id'] not in right_ids:
-            right_ids.append(element['id'])
+    right_ids = {element['id'] for element in extended_id_list}
 
     return render_template('searched_questions.html', phrase=phrase, questions=questions, ids=right_ids, answers=answers, title="Search")
 
@@ -425,10 +371,7 @@ def edit_answer(answer_id):
     if logged_in:
         answers = data_handler.get_all_user_answer()
         questions = data_handler.get_all_user_answer()
-
-        for answer in answers:
-            if answer["id"] == answer_id:
-                question_id = answer["question_id"]
+        question_id = util.get_question_id_by_answers(answers, answer_id)
 
         if request.method == "POST":
             message = request.form["updated-answer"]
@@ -438,7 +381,7 @@ def edit_answer(answer_id):
             else:
                 image = "images/"+request.form["image"]
 
-            data_handler.update_user_answer(message,image,answer_id)
+            data_handler.update_user_answer(message, image, answer_id)
 
             return redirect(url_for("display_post", question_id=question_id))
 
@@ -460,14 +403,7 @@ def edit_comment(comment_id):
             time = now_time.strftime("%Y/%m/%d %H:%M:%S")
             message = request.form["updated-comment"]
 
-            for comment in comments:
-                if comment["id"] == comment_id:
-                    if comment["edited_count"] == None:
-                        edit_counter = 1
-                    else:
-                        edit_counter = int(comment["edited_count"]) + 1
-
-            data_handler.update_comment(message,time,edit_counter,comment_id)
+            data_handler.update_comment(message, time, util.give_edit_counter_right_value(comments, comment_id), comment_id)
 
             # return redirect(url_for("display_post", question_id=question_id))
             return redirect(url_for("main_page"))
@@ -488,6 +424,7 @@ def delete_comment(comment_id):
         comments = data_handler.list_all_comments()
 
         for comment in comments:
+
             for question in questions:
                 if question["id"] == comment["question_id"]:
                     question_id = question["id"]
@@ -524,13 +461,10 @@ def add_question_tag(question_id):
                             return render_template('adding_tag.html', tags=tags,  question_id=question_id)
 
                     data_handler.add_new_tag(request.form['new-tag'])
-                    new_tag_id = data_handler.max_tag_id()
-                    data_handler.insert_new_ids(question_id, new_tag_id[0]['max'])
+                    data_handler.insert_new_ids(question_id, data_handler.max_tag_id()[0]['max'])
 
                 elif 'existing-tags' in request.form:
-                    existing_tag = request.form['existing-tags']
-                    existing_tag_id = data_handler.get_id_to_tag(existing_tag)
-                    data_handler.insert_new_ids(question_id, existing_tag_id[0]['id'])
+                    data_handler.insert_new_ids(question_id, data_handler.get_id_to_tag(request.form['existing-tags'])[0]['id'])
 
                 return redirect(url_for('display_post', question_id=question_id))
 
@@ -560,17 +494,10 @@ def register():
     if request.method == 'POST':
         if request.form['password1'] == request.form['password2']:
             username = request.form['username']
-            password = util.hash_password(request.form['password1'])
-            users = data_handler.list_users()
-            date = now_time.strftime("%Y/%m/%d %H:%M:%S")
-            unique = True
-
-            for user in users:
-                if user['name'] == username:
-                    unique = False
+            unique = next(False if user['name'] == username else True for user in data_handler.list_users())
 
             if unique:
-                data_handler.add_new_user(username, password, date)
+                data_handler.add_new_user(username, util.hash_password(request.form['password1']), now_time.strftime("%Y/%m/%d %H:%M:%S"))
                 return redirect(url_for('main_page'))
 
             return render_template('register_page.html', error_message = "ERROR: Username already in use!", title="Register")
@@ -582,11 +509,9 @@ def register():
 
 @app.route("/users")
 def list_users():
-    #if session:
     count_activity = data_handler.count_user_activity()
 
     return render_template('list_users.html', count_activity=count_activity, title="Users")
-    #return redirect(url_for('main_page'))
 
 
 @app.route("/user/<int:user_id>")
