@@ -88,7 +88,7 @@ def delete(cursor: RealDictCursor, table_name: str, column_name: str, value) -> 
 
 
 @database_common.connection_handler
-def update_where(cursor: RealDictCursor, table_name: str, set_name: str, set_value, column_name: str, where_value) -> list:
+def update_where(cursor: RealDictCursor, table_name: str, set_name: str, set_value: bool, column_name: str, where_value) -> list:
     query = sql.SQL(
         '''
         UPDATE {table}

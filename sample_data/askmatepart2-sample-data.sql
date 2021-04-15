@@ -145,3 +145,4 @@ INSERT INTO question_tag VALUES (3, 3);
 INSERT INTO users VALUES (1,'test','$2b$12$vbodl658tstz1yXMOmqgR.NAPIX76GYhLB6PMhaEojn2OZ79Lg0JS','2017-04-11 17:11:32', 0);
 INSERT INTO users VALUES (2,'asker','$2b$12$R23TY59Dp5it7XXnNzdXx.178XtxLECKG5MRhZKGXgjfFRuWANV8.','2017-04-11 14:42:00', 0);
 INSERT INTO users VALUES (3,'commenter', '$2b$12$XcT3utYd79YToMKeIh86RuU.29B/Qt/f0.KrtYT7DIFCbTW2IehtW','2017-04-11 18:19:11', 0);
+SELECT pg_catalog.setval('users_id_seq', 3, true);

@@ -49,7 +49,9 @@
             <p style="font-size: 17px">Enjoy your stay!</p>
 
             <a href="/tags" id="nav-hrefs" class="btn btn-info">List tags</a>
-            <a href="/users" id="nav-hrefs" class="btn btn-secondary">Users details</a>
+            {% if session %}
+                <a href="/users" id="nav-hrefs" class="btn btn-secondary">Users details</a>
+            {% endif %}
         </center>
         <br><hr>
         <br>
