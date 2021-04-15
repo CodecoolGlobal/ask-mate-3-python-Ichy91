@@ -86,7 +86,6 @@ def delete(cursor: RealDictCursor, table_name: str, column_name: str, value) -> 
         table=sql.Identifier(table_name),
         column = sql.Identifier(column_name))
     cursor.execute(query, [value])
-    return cursor.fetchall()
 
 
 @database_common.connection_handler
@@ -95,12 +94,11 @@ def update_where(cursor: RealDictCursor, table_name: str, set_name: str, set_val
         '''
         UPDATE {table}
         SET {set} = %s
-        WHERE {table} = %s''').format(
+        WHERE {column} = %s''').format(
         table=sql.Identifier(table_name),
         set=sql.Identifier(set_name),
         column = sql.Identifier(column_name))
     cursor.execute(query, [set_value, where_value])
-    return cursor.fetchall()
 
 
 @database_common.connection_handler
