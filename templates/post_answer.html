@@ -15,7 +15,7 @@
 
                         <div class="form-group">
                             <label for="answer" id="label-comment">Answer for the question</label><br>
-                            <textarea class="form-control" id="answer" minlength ="5" name="answer" required></textarea><br>
+                            <textarea class="form-control" id="answer" minlength ="2" name="answer" required></textarea><br>
                         </div>
 
                         <h4>Upload a picture</h4><br>
@@ -31,7 +31,7 @@
                     <center><button type="submit" class="btn-primary" id="submit">Add your answer</button></center>
 
                     </form>
-            <br><br><a href="/question/{{ question_id }}" id="back-to-posts">Back to post</a>
+            <br><br><a href="/question/{{ question_id }}" id="back-to-posts" class="btn btn-info">Back to post</a>
 
                   <script>
                     document.querySelector('.custom-file-input').addEventListener('change', function (e) {

@@ -1,3 +1,6 @@
+body {
+    background: lightcyan;
+}
 #question-message {
     font-size:17px;
 }
@@ -39,8 +42,6 @@
 .topnav {
   overflow: hidden;
   background-color: #333;
-  position: fixed;
-  width: 100%
 }
 
 .answer-phrase-placement {

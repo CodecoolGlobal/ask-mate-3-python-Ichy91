@@ -7,11 +7,13 @@
 {% block header %}
 
     <div class="topnav">
-        <a href="/" id="nav-hrefs" class="btn-secondary">Main page</a>
+        <a href="/users" id="nav-hrefs" class="btn-secondary">Back</a>
+        <a href="/" id="nav-hrefs" class="btn-secondary" style="float:right">Main page</a>
     </div>
     <br>
 
     <center>
+    <br><br>
     <div>
         <h1>Information about the user</h1>
     </div>
@@ -54,12 +56,13 @@
 
     <br><br>
     <div class="questions_for_user">
-    <h3>Question(s):</h3>
+    <h2>Question(s):</h2>
+    <br>
         {% for question in questions %}
             {% if user_id == question.user_id %}
                 <p>
-                <h5>{{ question.title }}</h5><br>
-                    <a href="/question/{{ question_id }}" id="user_id">{{ question.message }}</a>
+                <h5 style="margin: 10px">{{ question.title }}</h5>
+                    <a href="/question/{{ question_id }}" id="user_id" style="margin: 20px">{{ question.message }}</a>
                 <hr>
                 </p>
             {% endif %}
@@ -68,12 +71,12 @@
 
     <br>
     <div class="answer_for_user">
-    <h3>Answer(s):</h3>
+    <h2>Answer(s):</h2>
+    <br>
         {% for answer in answers %}
             {% if user_id == answer.user_id %}
                 <p>
-                <h5>{{ answer.title }}</h5><br>
-                    <a href="/question/{{ question_id }}" id="user_id">{{ answer.message }}</a>
+                    <a href="/question/{{ question_id }}" id="user_id" style="margin: 20px">{{ answer.message }}</a>
                 <hr>
                 </p>
             {% endif %}
@@ -82,11 +85,11 @@
 
     <br>
     <div class="comment_for_user">
-    <h3>Comments(s):</h3>
+    <h2>Comments(s):</h2>
         {% for comment in comments %}
             {% if user_id == comment.user_id %}
                 <p><br>
-                    <a href="/question/{{ question_id }}" id="user_id">{{ comment.message }}</a>
+                    <a href="/question/{{ question_id }}" id="user_id" style="margin: 20px">{{ comment.message }}</a>
                 <hr>
                 </p>
             {% endif %}

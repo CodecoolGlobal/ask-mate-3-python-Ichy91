@@ -7,13 +7,15 @@
 {% block header %}
     <div class="topnav">
 
-        <a href="/question/{{ question_id }}/delete" style="float:right">Delete the question</a>
-        <a href="/question/{{ question_id }}/edit" style="float:right">Edit the question</a>
-        <a href="/question/{{ question_id }}/new-comment" style="float:right">Add comment</a>
-        <a href="/question/{{ question_id }}/new-tag" style="float:right">Add new tag</a>
+        {% if login %}
+            <a href="/question/{{ question_id }}/delete" style="float:right" id="nav-hrefs">Delete the question</a>
+            <a href="/question/{{ question_id }}/edit" style="float:right" id="nav-hrefs">Edit the question</a>
+            <a href="/question/{{ question_id }}/new-tag" style="float:right" id="nav-hrefs">Add new tag</a>
+        {% else %}
+            <a href="/question/{{ question_id }}/new-comment" style="float:right" id="nav-hrefs">Add comment</a>
+            <a href="/" class="btn-secondary" id="nav-hrefs" style="float:left">Main Page</a>
+        {% endif %}
 
-        <a href="/" class="btn-secondary" id="nav-hrefs">Main Page</a>
-        <a href="/tags" id="nav-hrefs" class="btn-secondary">List tags</a>
 
     </div>
 {% endblock %}
@@ -21,7 +23,7 @@
 {% block content %}
     <main>
         <section>
-
+        <br><br>
         {% for question in questions %}
             {% if question_id == question.id %}
                 <br>
@@ -40,6 +42,12 @@
                         {% endfor %}
                     </h2>
 
+                    {% for user in users %}
+                        {% if question.user_id == user.id %}
+                        <small id="question-small-tag">Written by {{ user.name }}</small><br>
+                               {% endif %}
+                    {% endfor %}
+
                     <small id="question-small-tag">{{ question.submission_time }} | ⇅{{ question.vote_number }}</small>
                     <br><br>
 
@@ -55,11 +63,23 @@
                     {% for comment in question_comment %}
                         {% if question_id == comment.question_id %}
                             <article>
+
                                 <div class="question-comments">
+
+                                    {% for user in users %}
+                                        {% if comment.user_id == user.id %}
+                                            <small id="question-small-tag">Written by {{ user.name }}</small><br>
+                                        {% endif %}
+                                    {% endfor %}
+
                                     <small id="question-small-tag">{{ comment.submission_time }} | Edited: {{ comment.edited_count }}</small>
                                     <p>{{ comment.message }}</p>
-                                    <a href="/comment/{{ comment.id }}/edit" id="comment-edit" class="btn btn-primary">Edit comment</a>
-                                    <a href="/comments/{{ comment.id }}/delete" id="answer-delete" class="btn btn-danger">Delete comment</a>
+                                        {% for user in users %}
+                                                {% if comment.user_id == user.id %}
+                                            <a href="/comment/{{ comment.id }}/edit" id="comment-edit" class="btn btn-primary">Edit comment</a>
+                                            <a href="/comments/{{ comment.id }}/delete" id="answer-delete" class="btn btn-danger">Delete comment</a>
+                                                {% endif %}
+                                        {% endfor %}
                                     <br><br>
                                 </div>
                             </article>
@@ -76,7 +96,9 @@
 
             <center>
                 <p id="add-comment-section">If you want to ask something just click down below!<br><br>
-                <a href="/question/{{ question_id }}/new-answer">Write an answer</a></p>
+                    {% if not login %}
+                        <a href="/question/{{ question_id }}/new-answer">Write an answer</a>
+                    {% endif %}</p>
             </center>
 
         </section>
@@ -86,6 +108,13 @@
             {% for answer in answers %}
                 {% if question_id == answer.question_id %}
                     <article>
+
+                    {% for user in users %}
+                        {% if answer.user_id == user.id %}
+                            <small id="question-small-tag">Written by {{ user.name }}</small><br>
+                            {% endif %}
+                        {% endfor %}
+
                     <small id="question-small-tag">{{ answer.submission_time }} | ⇅ {{ answer.vote_number }}</small>
                         <a href="/answer/{{ answer.id }}/vote_up"
                            id="answer-vote-up" class="btn btn-success">⬆</a><br><br>
@@ -105,20 +134,39 @@
                         {% endif %}
 
                         <br>
-                        <a href="/answer/{{ answer.id }}/edit" id="answer-buttons" class="btn btn-primary">Edit answer</a>
-                        <a href="/answer/{{ answer.id }}/new-comment" id="answer-buttons" class="btn btn-info">Add comment</a>
-                        <a href="/answer/{{ answer.id }}/delete" id="answer-buttons" class="btn btn-danger">Delete answer</a>
+                        {% for user in users %}
+                            {% if answer.user_id == user.id %}
+                                <a href="/answer/{{ answer.id }}/edit" id="answer-buttons" class="btn btn-primary">Edit answer</a>
+                                <a href="/answer/{{ answer.id }}/new-comment" id="answer-buttons" class="btn btn-info">Add comment</a>
+                                <a href="/answer/{{ answer.id }}/delete" id="answer-buttons" class="btn btn-danger">Delete answer</a>
+                            {% endif %}
+                        {% endfor %}
                         <br><br>
                         <p id="comment-title">Comment(s) for the answer:</p>
                             {% for comment in comments %}
                                 {% if answer.id == comment.answer_id %}
+
+
                                 <div class="answer-comments">
+
+                                    {% for user in users %}
+                                        {% if comment.user_id == user.id %}
+                                            <small id="question-small-tag">Written by {{ user.name }}</small><br>
+                                        {% endif %}
+                                    {% endfor %}
+
                                     <small id="question-small-tag"><br>{{ comment.submission_time }} | Edited: {{ comment.edited_count }}
                                      </small>
                                     <br>
                                     <p>{{ comment.message }}</p>
-                                    <a href="/comment/{{ comment.id }}/edit" id="comment-edit" class="btn btn-primary">Edit comment</a>
-                                    <a href="/comments/{{ comment.id }}/delete" id="answer-delete" class="btn btn-danger">Delete comment</a>
+
+                                        {% for user in users %}
+                                            {% if comment.user_id == user.id %}
+                                        <a href="/comment/{{ comment.id }}/edit" id="comment-edit" class="btn btn-primary">Edit comment</a>
+                                        <a href="/comments/{{ comment.id }}/delete" id="answer-delete" class="btn btn-danger">Delete comment</a>
+                                                {% endif %}
+                                        {% endfor %}
+
                                 </div>
 
                                 {% endif %}

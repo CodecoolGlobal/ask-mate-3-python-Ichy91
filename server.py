@@ -12,11 +12,12 @@ app.secret_key = os.urandom(16)
 def main_page():
     global logged_in
     questions = data_handler.get_five_latest_user_stories()
+    users = data_handler.list_users()
 
     if 'username' in session:
-        return render_template("home.html", questions=questions, title="Home Page", login=logged_in)
+        return render_template("home.html", questions=questions, title="Home Page", login=logged_in, users=users)
     else:
-        return render_template("home.html", questions=questions, title="Home Page", login=logged_in)
+        return render_template("home.html", questions=questions, title="Home Page", login=logged_in, users=users)
 
 
 @app.route("/list")
@@ -25,6 +26,7 @@ def list_all_questions():
 
     column_name = request.args.get('column-name')
     order_direction = request.args.get('order_direction')
+    users = data_handler.list_users()
 
     if column_name and order_direction == 'DESC':
         questions = data_handler.order_list_descending(column_name)
@@ -33,7 +35,7 @@ def list_all_questions():
     else:
         questions = data_handler.get_all_user_story()
 
-    return render_template("list.html", questions=questions, title="All questions", login=logged_in)
+    return render_template("list.html", questions=questions, title="All questions", login=logged_in, users=users)
 
 
 @app.route("/login", methods=['GET', 'POST'])
@@ -54,7 +56,7 @@ def login():
 
                 return redirect(url_for('main_page'))
 
-        return render_template('login.html', title="Login", error='Invalid login attempt')
+        return render_template('login.html', title="Login", error='ERROR: Invalid login attempt!')
 
     return render_template('login.html', title="Login")
 
@@ -77,6 +79,7 @@ def display_post(question_id):
     comments = data_handler.list_all_comments()
     questions_tags = data_handler.question_tags()
     tags = data_handler.get_tags()
+    users = data_handler.list_users()
 
     for question in questions:
         if question['id'] == question_id:
@@ -92,12 +95,12 @@ def display_post(question_id):
             return render_template("display_question_by_owner.html", questions=questions, answers=answers,
                                    question_id=question_id, title="Post",
                                    question_comment=question_comment, comments=comments,
-                                   questions_tags=questions_tags, tags=tags)
+                                   questions_tags=questions_tags, tags=tags, users=users)
 
     return render_template("display_question.html", questions=questions, answers=answers,
                            question_id=question_id, title="Post",
                            question_comment=question_comment,comments=comments,
-                           questions_tags=questions_tags, tags=tags)
+                           questions_tags=questions_tags, tags=tags, users=users)
 
 
 @app.route("/add-question", methods=["GET","POST"])
@@ -155,7 +158,7 @@ def post_answer(question_id):
         else:
             questions = data_handler.get_all_user_story()
 
-            return render_template("post_answer.html", title="Post comment", questions=questions, question_id=question_id)
+            return render_template("post_answer.html", title="Post answer", questions=questions, question_id=question_id)
     else:
         return redirect(url_for('main_page'))
 
@@ -178,7 +181,7 @@ def add_new_comment_to_question(question_id):
 
             return redirect(url_for('display_post', question_id=question_id))
 
-        return render_template('add_comment_question.html', questions=questions, question_id=question_id)
+        return render_template('add_comment_question.html', questions=questions, question_id=question_id, title="Add comment")
 
     else:
         return redirect(url_for('main_page'))
@@ -207,7 +210,7 @@ def add_answer_comment(answer_id):
 
             return redirect(url_for("display_post", question_id=question_id))
 
-        return render_template("add_comment_answer.html", answers=answers, questions=questions, answer_id=answer_id)
+        return render_template("add_comment_answer.html", answers=answers, questions=questions, answer_id=answer_id, title="Add comment")
 
     else:
         return redirect(url_for('main_page'))
@@ -278,7 +281,7 @@ def edit_question(question_id):
         else:
             questions = data_handler.get_all_user_story()
 
-            return render_template("edit_question.html", title="Update", questions=questions, question_id=question_id)
+            return render_template("edit_question.html", title="Edit question", questions=questions, question_id=question_id,)
     else:
         return redirect(url_for('main_page'))
 
@@ -412,7 +415,7 @@ def search_phrase():
         if element['id'] not in right_ids:
             right_ids.append(element['id'])
 
-    return render_template('searched_questions.html', phrase=phrase, questions=questions, ids=right_ids, answers=answers)
+    return render_template('searched_questions.html', phrase=phrase, questions=questions, ids=right_ids, answers=answers, title="Search")
 
 
 @app.route("/answer/<int:answer_id>/edit", methods=["GET","POST"])
@@ -439,7 +442,7 @@ def edit_answer(answer_id):
 
             return redirect(url_for("display_post", question_id=question_id))
 
-        return render_template("edit_answer.html", answers=answers, questions=questions, answer_id=answer_id, question_id=question_id)
+        return render_template("edit_answer.html", answers=answers, questions=questions, answer_id=answer_id, question_id=question_id, title="Edit answer")
     else:
         return redirect(url_for('main_page'))
 
@@ -470,7 +473,7 @@ def edit_comment(comment_id):
             return redirect(url_for("main_page"))
 
         return render_template("edit_comment.html", comment_id=comment_id, comments=comments,
-                               questions=questions, answers=answers)
+                               questions=questions, answers=answers, title="Edit comment")
     else:
         return redirect(url_for('main_page'))
 
@@ -504,7 +507,7 @@ def delete_comment(comment_id):
 def list_tags():
     tags_and_occurence = data_handler.tags_and_occurence()
 
-    return render_template('display_tags.html', tags=tags_and_occurence)
+    return render_template('display_tags.html', tags=tags_and_occurence, title="Tags")
 
 
 @app.route("/question/<int:question_id>/new-tag", methods=["GET","POST"])
@@ -570,11 +573,11 @@ def register():
                 data_handler.add_new_user(username, password, date)
                 return redirect(url_for('main_page'))
 
-            return render_template('register_page.html', error_message = "ERROR: Username already in use!")
+            return render_template('register_page.html', error_message = "ERROR: Username already in use!", title="Register")
 
-        return render_template('register_page.html', error_message = "ERROR: Passwords do not match!")
+        return render_template('register_page.html', error_message = "ERROR: Passwords do not match!", title="Register")
 
-    return render_template('register_page.html', error_message = "")
+    return render_template('register_page.html', error_message = "", title="Register")
 
 
 @app.route("/users")
@@ -582,7 +585,7 @@ def list_users():
     #if session:
     count_activity = data_handler.count_user_activity()
 
-    return render_template('list_users.html', count_activity=count_activity)
+    return render_template('list_users.html', count_activity=count_activity, title="Users")
     #return redirect(url_for('main_page'))
 
 
@@ -612,7 +615,7 @@ def get_user_data_by_id(user_id):
 
     return render_template('list_user_by_id.html', count_activity=count_activity,
                            questions=questions, comments=comments, answers=answers, user_id=user_id,
-                           question_id=question_id)
+                           question_id=question_id, title="User panel")
 
 
 @app.route("/answer/<int:question_id>/accept_answer", methods = ["POST"])

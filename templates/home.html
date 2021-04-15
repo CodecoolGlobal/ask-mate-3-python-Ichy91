@@ -7,14 +7,14 @@
     {% block header %}
 
     <div class="topnav">
-        <a href="/list" id="nav-hrefs" class="btn-secondary">List all questions</a> {# maybe login/register panel #}
         {% if login %}
-            <a href="/logout" id="nav-hrefs" class="btn-secondary">Logout</a> {# maybe login/register panel #}
+            <a href="/logout" id="nav-hrefs" class="btn-danger">Logout</a>
+            <span style="font-size:18px; color:white; margin: 50px">Logged in as: {{ session['username'] }}</span>
         {% else %}
-                <a href="/login" id="nav-hrefs" class="btn-secondary">Login</a>
-                <a href="/registration" id="nav-hrefs" class="btn-secondary">Register</a>{# maybe login/register panel #}
+                <a href="/login" id="nav-hrefs" class="btn-info">Login</a>
+                <a href="/registration" id="nav-hrefs" class="btn-secondary">Register</a>
         {% endif %}
-        <a href="/tags" id="nav-hrefs" class="btn-secondary">List tags</a>
+
         <div class="search-container">
             <form action="/search">
                 <input type="text" name="phrase" placeholder="Search for phrase..">
@@ -26,9 +26,31 @@
     <br>
 
         <center>
+            <br><br>
+
+            <form action="/list" style="text-align: right">
+                <label for="column-name">Filter by column:</label>
+                <select name="column-name">
+                    <option value="title">Title</option>
+                    <option value="submission_time">Submission time</option>
+                    <option value="message">Message</option>
+                    <option value="view_number">Number of views</option>
+                    <option value="vote_number">Number of votes</option>
+                </select>
+
+                <label for="order_direction">Order by:</label>
+                <select name="order_direction">
+                    <option value="DESC">Descending</option>
+                    <option value="ASC">Ascending</option>
+                </select>
+            <button type="submit" class="btn-primary">Sorting</button>
+        </form>
+
             <h1>Welcome on the Askers forum!</h1>
             <p style="font-size: 17px">Enjoy your stay!</p>
-            <a id="nav-hrefs" href="/add-question" class="btn btn-danger">Ask here</a>
+
+            <a href="/tags" id="nav-hrefs" class="btn btn-info">List tags</a>
+            <a href="/users" id="nav-hrefs" class="btn btn-secondary">Users details</a>
         </center>
         <br><hr>
         <br>
@@ -36,27 +58,14 @@
     {% endblock %}
 
 {% block content %}
-    <main>{# session['name'] ? #}
-        <a href="/users">Users details</a><br><br>
+    <main>
 
-        <form action="/list">
-            <label for="column-name">Filter by column:</label>
-            <select name="column-name">
-                <option value="title">Title</option>
-                <option value="submission_time">Submission time</option>
-                <option value="message">Message</option>
-                <option value="view_number">Number of views</option>
-                <option value="vote_number">Number of votes</option>
-            </select>
+        {% if login %}
+                <a id="nav-hrefs" href="/add-question" class="btn btn-warning" style="float:right">Ask here</a>
+        {% endif %}
 
-            <br><label for="order_direction">Order by:</label>
-            <select name="order_direction">
-                <option value="DESC">Descending</option>
-                <option value="ASC">Ascending</option>
-            </select>
-            <button type="submit" class="btn-primary">Sorting</button>
-        </form>
     <br>
+     <a href="/list" id="nav-hrefs" class="btn btn-secondary">List all questions</a> <br><br>
 
     <section>
         {% for question in questions %}
@@ -64,6 +73,15 @@
             <article>
                   <small id="question-views">{{ question.view_number }} views</small>
                   <h2><strong>{{ question.title }}</strong></h2>
+
+                {% for user in users %}
+                    {% if question.user_id == user.id %}
+
+                        <small id="question-small-tag">Written by {{ user.name }}</small><br>
+
+                    {% endif %}
+                {% endfor %}
+
                   <small id="question-small-tag">{{ question.submission_time }} | ⇅{{ question.vote_number }}</small>
                   <br>
 

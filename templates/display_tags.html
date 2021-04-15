@@ -4,13 +4,51 @@
    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/display_question.css')}}">
 {% endblock %}
 
+{% block header %}
+
+    <div class="topnav">
+        <a href="/" id="nav-hrefs" class="btn-secondary" style="float:right">Main page</a>
+    </div>
+    <br>
+
+    <center>
+    <div>
+        <br><br>
+        <h1>Available tags on the forum</h1>
+    </div>
+    </center>
+    <br><br>
+
+{% endblock %}
 
 {% block content %}
+
     <main>
-        <ul>
-            {% for tag in tags %}
-                <li>{{ tag.name }} -- {{ tag.occurence }}</li>
-            {% endfor %}
-        </ul>
+        <section>
+
+            <center>
+                <table border="1"style="font-size: 20px">
+
+                    <thead>
+                    <tr style="font-size: 22px; font-weight: 600; text-align:center">
+                        {% for tag in tags%}
+                            <td style="">{{ tag.name }}</td>
+                        {% endfor %}
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr style="text-align:center">
+                        {% for tag in tags%}
+                        <td>{{ tag.occurence }}</td>
+                        {% endfor %}
+                    </tr>
+                    </tbody>
+
+                </table>
+            </center>
+
+        </section>
     </main>
+
 {% endblock %}

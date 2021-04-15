@@ -99,6 +99,8 @@ img:hover {
 .topnav {
   overflow: hidden;
   background-color: #333;
+  position: fixed;
+  width: 100%
 }
 
 .answer-phrase-placement {

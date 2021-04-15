@@ -51,6 +51,7 @@
 
                         {% for answer in answers %}
                             {% if answer.question_id == question.id and phrase in answer.message.lower() %}
+                                <h5>Answer:</h5>
                                 <div class="answer-phrase-placement">- {{ answer.message | replace(phrase, replaced)}}<br></div>
                             {% endif %}
                         {% endfor %}

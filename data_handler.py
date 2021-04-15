@@ -18,7 +18,7 @@ def get_all_user_story(cursor: RealDictCursor) -> list:
 def get_five_latest_user_stories(cursor: RealDictCursor) -> list:
     query = """
     SELECT * FROM question
-    ORDER BY submission_time DESC
+    ORDER BY submission_time ASC
     LIMIT 5
     """
     cursor.execute(query)
@@ -352,8 +352,9 @@ def delete_tag_before_delete_question(cursor: RealDictCursor, question_id) -> li
 @database_common.connection_handler
 def tags_and_occurence(cursor: RealDictCursor) -> list:
     query = """
-        SELECT name, COUNT(name) AS occurence
+        SELECT name, COUNT(question_tag.question_id) AS occurence
         FROM tag
+        JOIN question_tag ON question_tag.tag_id = tag.id
         GROUP BY name
     """
     cursor.execute(query)
@@ -381,22 +382,52 @@ def count_user_activity(cursor: RealDictCursor) -> list:
 
     LEFT JOIN(
         SELECT question.user_id,
-               CASE WHEN question.user_id IS NULL THEN 0 ELSE COUNT(question.user_id) END AS asked_question
+               COUNT(question.user_id) AS asked_question
         FROM question
         GROUP BY user_id) question ON question.user_id = users.id
 
     LEFT JOIN(
         SELECT answer.user_id,
-               CASE WHEN answer.user_id IS NULL THEN 0 ELSE COUNT(answer.user_id) END AS answered
+              COUNT(answer.user_id) AS answered
         FROM answer
         GROUP BY user_id) answer ON answer.user_id = users.id
 
     LEFT JOIN(
         SELECT comment.user_id,
-               CASE WHEN comment.user_id IS NULL THEN 0 ELSE COUNT(comment.user_id) END AS commented
+               COUNT(comment.user_id) AS commented
         FROM comment
         GROUP BY user_id) comment ON comment.user_id = users.id
+
+        ORDER BY id
     """
+    """
+    # SELECT id,name,created_date,
+    #            CASE WHEN asked_question IS NULL THEN 0 ELSE asked_question END as asked_question,
+    #            CASE WHEN answered IS NULL THEN 0 ELSE answered END as answered,
+    #            CASE WHEN commented IS NULL THEN 0 ELSE commented END as commented,
+    #            reputation
+    #     FROM users
+    # 
+    #     LEFT JOIN(
+    #         SELECT question.user_id,
+    #                CASE WHEN question.user_id IS NULL THEN 0 ELSE COUNT(question.user_id) END AS asked_question
+    #         FROM question
+    #         GROUP BY user_id) question ON question.user_id = users.id
+    # 
+    #     LEFT JOIN(
+    #         SELECT answer.user_id,
+    #                CASE WHEN answer.user_id IS NULL THEN 0 ELSE COUNT(answer.user_id) END AS answered
+    #         FROM answer
+    #         GROUP BY user_id) answer ON answer.user_id = users.id
+    # 
+    #     LEFT JOIN(
+    #         SELECT comment.user_id,
+    #                CASE WHEN comment.user_id IS NULL THEN 0 ELSE COUNT(comment.user_id) END AS commented
+    #         FROM comment
+    #         GROUP BY user_id) comment ON comment.user_id = users.id
+    #         
+    #         ORDER BY id
+    # """
     cursor.execute(query)
     return cursor.fetchall()
 
