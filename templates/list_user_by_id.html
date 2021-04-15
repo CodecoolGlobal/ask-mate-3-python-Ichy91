@@ -62,7 +62,7 @@
             {% if user_id == question.user_id %}
                 <p>
                 <h5 style="margin: 10px">{{ question.title }}</h5>
-                    <a href="/question/{{ question_id }}" id="user_id" style="margin: 20px">{{ question.message }}</a>
+                    <a href="/question/{{ question.id }}" id="user_id" style="margin: 20px">{{ question.message }}</a>
                 <hr>
                 </p>
             {% endif %}
@@ -76,7 +76,7 @@
         {% for answer in answers %}
             {% if user_id == answer.user_id %}
                 <p>
-                    <a href="/question/{{ question_id }}" id="user_id" style="margin: 20px">{{ answer.message }}</a>
+                    <a href="/question/{{ answer.question_id }}" id="user_id" style="margin: 20px">{{ answer.message }}</a>
                 <hr>
                 </p>
             {% endif %}
@@ -89,7 +89,17 @@
         {% for comment in comments %}
             {% if user_id == comment.user_id %}
                 <p><br>
-                    <a href="/question/{{ question_id }}" id="user_id" style="margin: 20px">{{ comment.message }}</a>
+                    {% if comment.question_id %}
+                        <a href="/question/{{ comment.question_id }}" id="user_id" style="margin: 20px">{{ comment.message }}</a>
+                    {% elif comment.answer_id %}
+
+                        {% for answer in answers %}
+                            {% if comment.answer_id == answer.id %}
+                                <a href="/question/{{ answer.question_id }}" id="user_id" style="margin: 20px">{{ comment.message }}</a>
+                            {% endif %}
+                        {% endfor %}
+
+                    {% endif %}
                 <hr>
                 </p>
             {% endif %}
