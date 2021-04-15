@@ -45,7 +45,7 @@
                     {% for user in users %}
                         {% if question.user_id == user.id %}
                         <small id="question-small-tag">Written by {{ user.name }}</small><br>
-                               {% endif %}
+                        {% endif %}
                     {% endfor %}
 
                     <small id="question-small-tag">{{ question.submission_time }} | ⇅{{ question.vote_number }}</small>
@@ -72,15 +72,14 @@
                                         {% endif %}
                                     {% endfor %}
 
-                                    <small id="question-small-tag">{{ comment.submission_time }} | Edited: {{ comment.edited_count }}</small>
+                                    <small id="question-small-tag">{{ comment.submission_time }} | Edited: {{ comment.edited_count }}</small><br><br>
                                     <p>{{ comment.message }}</p>
                                         {% for user in users %}
-                                                {% if comment.user_id == user.id %}
-                                            <a href="/comment/{{ comment.id }}/edit" id="comment-edit" class="btn btn-primary">Edit comment</a>
-                                            <a href="/comments/{{ comment.id }}/delete" id="answer-delete" class="btn btn-danger">Delete comment</a>
+                                                {% if comment.user_id == user.id and session['username'] == user.name %}
+                                                    <a href="/comment/{{ comment.id }}/edit" id="comment-edit" class="btn btn-primary">Edit comment</a>
+                                                    <a href="/comments/{{ comment.id }}/delete" id="answer-delete" class="btn btn-danger">Delete comment</a><br>
                                                 {% endif %}
-                                        {% endfor %}
-                                    <br><br>
+                                            {% endfor %}
                                 </div>
                             </article>
                         {% endif %}
@@ -130,18 +129,19 @@
                         {% if answer.image %}
                             <br>
                             <img src="{{ url_for('static', filename=answer.image )}}" alt="{{ answer.image }}" id="answer-image">
-                            <br>
+                            <br><br>
                         {% endif %}
 
-                        <br>
+
                         {% for user in users %}
-                            {% if answer.user_id == user.id %}
+                            {% if answer.user_id == user.id and session['username'] == user.name %}
                                 <a href="/answer/{{ answer.id }}/edit" id="answer-buttons" class="btn btn-primary">Edit answer</a>
                                 <a href="/answer/{{ answer.id }}/new-comment" id="answer-buttons" class="btn btn-info">Add comment</a>
-                                <a href="/answer/{{ answer.id }}/delete" id="answer-buttons" class="btn btn-danger">Delete answer</a>
+                                <a href="/answer/{{ answer.id }}/delete" id="answer-buttons" class="btn btn-danger">Delete answer</a><br>
                             {% endif %}
                         {% endfor %}
-                        <br><br>
+
+                        <br>
                         <p id="comment-title">Comment(s) for the answer:</p>
                             {% for comment in comments %}
                                 {% if answer.id == comment.answer_id %}
@@ -151,29 +151,25 @@
 
                                     {% for user in users %}
                                         {% if comment.user_id == user.id %}
-                                            <small id="question-small-tag">Written by {{ user.name }}</small><br>
+                                            <small id="question-small-tag">Written by {{ user.name }}</small>
                                         {% endif %}
                                     {% endfor %}
 
                                     <small id="question-small-tag"><br>{{ comment.submission_time }} | Edited: {{ comment.edited_count }}
-                                     </small>
+                                     </small><br>
                                     <br>
                                     <p>{{ comment.message }}</p>
-
                                         {% for user in users %}
-                                            {% if comment.user_id == user.id %}
+                                            {% if comment.user_id == user.id and session['username'] == user.name %}
                                         <a href="/comment/{{ comment.id }}/edit" id="comment-edit" class="btn btn-primary">Edit comment</a>
-                                        <a href="/comments/{{ comment.id }}/delete" id="answer-delete" class="btn btn-danger">Delete comment</a>
+                                        <a href="/comments/{{ comment.id }}/delete" id="answer-delete" class="btn btn-danger">Delete comment</a><br>
                                                 {% endif %}
                                         {% endfor %}
 
                                 </div>
-
                                 {% endif %}
                             {% endfor %}
-
-                        <br><hr>
-
+                        <hr>
 
                 {% endif %}
             {% endfor %}
