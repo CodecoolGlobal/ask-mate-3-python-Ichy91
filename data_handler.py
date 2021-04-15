@@ -31,7 +31,7 @@ def get_five_latest_user_stories(cursor: RealDictCursor) -> list:
 def add_new_question(cursor: RealDictCursor, title, message, image, user_id) -> list:
     query = """
     INSERT INTO question (submission_time, view_number, vote_number, title, message, image, user_id)
-    VALUES(current_timestamp, 0, 0, %s, %s, %s, %s)
+    VALUES(current_timestamp(0), 0, 0, %s, %s, %s, %s)
         """
     cursor.execute(query,[title, message, image, user_id])
 
@@ -40,7 +40,7 @@ def add_new_question(cursor: RealDictCursor, title, message, image, user_id) -> 
 def add_new_answer(cursor: RealDictCursor, question_id, message, image, user_id) -> list:
     query = """
     INSERT INTO answer(submission_time, vote_number, question_id, message, image, user_id)
-    VALUES (current_timestamp, 0, %s, %s, %s, %s)
+    VALUES (current_timestamp(0), 0, %s, %s, %s, %s)
     """
     cursor.execute(query, [question_id, message, image, user_id])
 
@@ -191,7 +191,7 @@ def get_search_result_questions_id_of_answers(cursor: RealDictCursor, phrase: st
 def add_comment_to_answer(cursor: RealDictCursor, answer_id, message, user_id) -> list:
     query = """
     INSERT INTO comment (answer_id, message, submission_time, edited_count, user_id)
-    VALUES (%s, %s, current_timestamp, 0, %s)
+    VALUES (%s, %s, current_timestamp(0), 0, %s)
     """
     cursor.execute(query, [answer_id, message, user_id])
 
@@ -200,7 +200,7 @@ def add_comment_to_answer(cursor: RealDictCursor, answer_id, message, user_id) -
 def add_new_comment_to_question(cursor: RealDictCursor, question_id,  message, user_id) -> list:
     query = """
     INSERT INTO comment(question_id, message, submission_time, edited_count, user_id)
-    VALUES (%s, %s, current_timestamp, 0, %s)
+    VALUES (%s, %s, current_timestamp(0), 0, %s)
     """
     cursor.execute(query, [question_id, message, user_id])
 
@@ -219,7 +219,7 @@ def list_all_comments(cursor: RealDictCursor) -> list:
 def update_comment(cursor: RealDictCursor, update_comment, edited_count,  comment_id) -> list:
     query = """
     UPDATE comment
-    SET message = %s, submission_time = current_timestamp, edited_count = %s
+    SET message = %s, submission_time = current_timestamp(0), edited_count = %s
     WHERE id = %s
     """
     cursor.execute(query, [update_comment, edited_count, comment_id])
@@ -367,7 +367,7 @@ def tags_and_occurence(cursor: RealDictCursor) -> list:
 def add_new_user(cursor: RealDictCursor, username, hashed_password) -> list:
     query = """
     INSERT INTO users(name, password, created_date, reputation)
-    VALUES (%s, %s, current_timestamp, 0)
+    VALUES (%s, %s, now(), 0)
     """
     cursor.execute(query, [username, hashed_password])
 
